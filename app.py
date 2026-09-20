@@ -306,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع استخدام ملف Logo.png الموجود في المستودع
+  # عرض التذكرة مع تكبير اللوجو وتوسيع المسافات داخل مقاس 10*15 سم
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -316,28 +316,28 @@ if choice == "إصدار التذاكر والحضور":
     with col_c2:
       with st.container(border=True):
         if os.path.exists("Logo.png"):
-          st.image("Logo.png", width=70)
+          st.image("Logo.png", width=110)
         st.markdown(
-            "<h4 style='text-align: center; color: #10233F; margin:0;'>الأكاديمية"
+            "<h4 style='text-align: center; color: #10233F; margin-top:5px;'>الأكاديمية"
             " المهنية للمعلمين</h4>",
             unsafe_allow_html=True,
         )
         st.markdown(
-            "<p style='text-align: center; color: #555; font-size: 13px;"
-            " margin:0;'>فرع الجيزة</p>",
+            "<p style='text-align: center; color: #555; font-size: 14px;"
+            " margin-bottom:5px;'>فرع الجيزة</p>",
             unsafe_allow_html=True,
         )
         st.markdown("---")
         st.markdown(
-            "<p style='text-align: center; font-size: 12px; color:"
+            "<p style='text-align: center; font-size: 13px; color:"
             " #666;'>تذكرة أسبقية الحضور</p>",
             unsafe_allow_html=True,
         )
 
         st.markdown(
             f"<div style='text-align: center; background-color: #fdf8e2; border:"
-            " 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin:"
-            " 10px 0;'><span style='font-size: 24px; font-weight: bold; color:"
+            " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
+            " 10px 0;'><span style='font-size: 26px; font-weight: bold; color:"
             f" #d9534f;'>[ {tk['serial']} ]</span></div>",
             unsafe_allow_html=True,
         )
@@ -357,7 +357,7 @@ if choice == "إصدار التذاكر والحضور":
         )
 
         st.markdown(
-            "<p style='text-align: center; font-size: 12px; color: #10233F;"
+            "<p style='text-align: center; font-size: 13px; color: #10233F;"
             " font-weight: bold; margin-top: 10px;'>أهلاً بكم في فرع الجيزة - يرجى"
             " الانتظار لحين استدعائكم</p>",
             unsafe_allow_html=True,
@@ -365,7 +365,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # تحويل الشعار إلى Base64 ليظهر بسلاسة داخل النافذة المنفصلة للطباعة
+    # تحويل الشعار إلى Base64 بحجم أكبر وواضح للطباعة
     import base64
 
     logo_base64 = ""
@@ -375,12 +375,12 @@ if choice == "إصدار التذاكر والحضور":
 
     logo_img_tag = (
         f'<img src="data:image/png;base64,{logo_base64}"'
-        ' style="max-height: 50px; display: block; margin: 0 auto 3px auto;" />'
+        ' style="max-height: 85px; display: block; margin: 0 auto 5px auto;" />'
         if logo_base64
-        else '<div style="text-align: center; font-size: 22px;">🏛️</div>'
+        else '<div style="text-align: center; font-size: 28px;">🏛️</div>'
     )
 
-    # قالب HTML مستقل يعرض اللوجو من المستودع بدقة عالية
+    # قالب HTML مستقل بتكبير اللوجو وتوسيع المسافات بملء الفريم بدقة
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -407,7 +407,7 @@ if choice == "إصدار التذاكر والحضور":
         .ticket-box {{
             width: 10cm;
             height: 15cm;
-            padding: 6mm 8mm;
+            padding: 7mm 9mm;
             box-sizing: border-box;
             border: 2.5px solid #10233F;
             background-color: #ffffff;
@@ -438,7 +438,7 @@ if choice == "إصدار التذاكر والحضور":
         @media print {{
             .actions {{ display: none; }}
             body {{ background: white; }}
-            .ticket-box {{ border: none; width: 10cm; height: 15cm; padding: 5mm 7mm; }}
+            .ticket-box {{ border: none; width: 10cm; height: 15cm; padding: 6mm 8mm; }}
         }}
     </style>
 </head>
@@ -446,17 +446,17 @@ if choice == "إصدار التذاكر والحضور":
     <div class="ticket-box">
         <div>
             {logo_img_tag}
-            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
-            <div style="text-align: center; color: #555; font-size: 13px; margin-bottom: 3px;">فرع الجيزة</div>
-            <hr style="border: 1px solid #10233F; margin: 4px 0;">
+            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 19px; margin-top: 2px;">الأكاديمية المهنية للمعلمين</div>
+            <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
+            <hr style="border: 1px solid #10233F; margin: 6px 0;">
             
-            <div style="text-align: center; font-size: 11px; color: #666; margin-bottom: 2px;">تذكرة أسبقية الحضور</div>
+            <div style="text-align: center; font-size: 12px; color: #666; margin-bottom: 3px;">تذكرة أسبقية الحضور</div>
             
-            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 5px; border-radius: 6px; margin: 5px 0;">
-                <span style="font-size: 23px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 7px; border-radius: 6px; margin: 6px 0;">
+                <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
             </div>
             
-            <div style="font-size: 12.5px; line-height: 1.8; color: #111; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 4px 0; margin-bottom: 6px;">
+            <div style="font-size: 13.5px; line-height: 2.2; color: #111; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 6px 0; margin-bottom: 8px;">
                 <b>الاسم:</b> {tk['name']}<br>
                 <b>البرنامج:</b> {tk['program']}<br>
                 <b>الرقم القومي:</b> {tk['id']}<br>
@@ -464,19 +464,19 @@ if choice == "إصدار التذاكر والحضور":
                 <b>الوقت والتاريخ:</b> {tk['datetime']}
             </div>
             
-            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 6px; border-radius: 4px; font-size: 10.5px; line-height: 1.5; margin-bottom: 6px;">
+            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; font-size: 11px; line-height: 1.6; margin-bottom: 8px;">
                 <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
                 • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
                 • صورة بطاقة الرقم القومي سارية.<br>
                 • إيصال الدفع إن وجد.
             </div>
 
-            <div style="text-align: center; font-size: 11.5px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 6px; border-radius: 4px;">
+            <div style="text-align: center; font-size: 12.5px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 7px; border-radius: 5px;">
                 أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
             </div>
         </div>
         
-        <div style="text-align: center; font-size: 10px; color: #555; padding-top: 3px; border-top: 1px dashed #ddd;">
+        <div style="text-align: center; font-size: 10.5px; color: #555; padding-top: 4px; border-top: 1px dashed #ddd;">
             نظام إصدار تذاكر أسبقية الحضور - فرع الجيزة
         </div>
     </div>
