@@ -1,5 +1,7 @@
+import base64
 import os
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import pandas as pd
 import streamlit as st
 
@@ -247,8 +249,11 @@ if choice == "إصدار التذاكر والحضور":
   ):
     if "current_selected_teacher" in st.session_state:
       ft = st.session_state["current_selected_teacher"]
-      current_date = datetime.now().strftime("%Y-%m-%d")
-      current_time = datetime.now().strftime("%I:%M:%S %p")
+
+      # ضبط الوقت والتاريخ حسب توقيت مصر المحلي (القاهرة) بدقة تامة
+      cairo_tz = ZoneInfo("Africa/Cairo")
+      current_date = datetime.now(cairo_tz).strftime("%Y-%m-%d")
+      current_time = datetime.now(cairo_tz).strftime("%I:%M:%S %p")
 
       already_logged = log_df[
           (log_df["National_ID"].astype(str).str.strip() == str(ft["id"]))
@@ -459,7 +464,6 @@ if choice == "إصدار التذاكر والحضور":
           del st.session_state["current_selected_teacher"]
         st.rerun()
     with b_col2:
-      # استخدام زر تحميل رسمي آمن لا يتم حظره أونلاين
       st.download_button(
           label="📥 تحميل التذكرة (جاهزة للطباعة / PDF)",
           data=standalone_ticket_html,
@@ -532,7 +536,7 @@ elif choice == "سجل الحضور والتقارير":
   else:
     col1, col2 = st.columns(2)
     with col1:
-      filter_date = st.date_input(" تصفية حسب التاريخ", datetime.now())
+      filter_date = st.date_input("تصفية حسب التاريخ", datetime.now())
 
     filtered_log = log_df[log_df["Date"] == str(filter_date)]
 
