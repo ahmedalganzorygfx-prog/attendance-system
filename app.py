@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL
+# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتصميم تذكرة الطباعة بحجم 10*15 سم
 st.markdown(
     """
     <style>
@@ -25,6 +25,63 @@ st.markdown(
         direction: rtl;
         text-align: right;
     }
+    
+    /* تنسيق تذكرة الطباعة (بحجم تقريبي 10×15 سم / أو أبعاد بطاقة احترافية) */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #printable-ticket, #printable-ticket * {
+            visibility: visible;
+        }
+        #printable-ticket {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 10cm;
+            height: 15cm;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #000;
+            background: white;
+        }
+    }
+    
+    .ticket-box {
+        width: 100%;
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 25px;
+        border: 2px dashed #10233F;
+        border-radius: 15px;
+        background-color: #f9f9f9;
+        text-align: center;
+        font-family: 'Cairo', sans-serif;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    .ticket-header {
+        font-size: 18px;
+        font-weight: bold;
+        color: #10233F;
+        margin-bottom: 5px;
+    }
+    .ticket-subheader {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 15px;
+    }
+    .ticket-body {
+        text-align: right;
+        font-size: 15px;
+        margin-bottom: 20px;
+        line-height: 1.8;
+    }
+    .ticket-footer {
+        font-size: 12px;
+        color: #777;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -35,7 +92,7 @@ TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
 
 
-# وظائف لإنشاء ملفات افتراضية صحيحة إذا لم تكن موجودة أو كانت تالفة
+# وظائف لإنشاء ملفات افتراضية صحيحة إذا لم تكن موجودة
 def init_files():
   if not os.path.exists(TEACHERS_FILE):
     df_default = pd.DataFrame(
@@ -78,10 +135,9 @@ menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الح
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
 
-# تحميل البيانات مع ضبط الفاصل (;) ومعالجة الأعمدة الناقصة تلقائياً
+# تحميل البيانات مع ضبط الفاصل ومعالجة الأعمدة الناقصة تلقائياً
 @st.cache_data(ttl=2)
 def load_data():
-  # قراءة ملف المعلمين
   teachers_df = None
   for enc in ["utf-8-sig", "utf-8", "cp1256", "iso-8859-6", "latin1"]:
     try:
@@ -112,7 +168,6 @@ def load_data():
 
   teachers_df.columns = [c.strip() for c in teachers_df.columns]
 
-  # قراءة ملف السجلات مع التأكد من سلامة الأعمدة
   log_df = None
   for enc in ["utf-8-sig", "utf-8", "cp1256", "iso-8859-6", "latin1"]:
     try:
@@ -159,7 +214,6 @@ if choice == "تسجيل الحضور":
     if len(nat_id) != 14 or not nat_id.isdigit():
       st.error("الرجاء إدخال رقم قومي صحيح مكون من 14 رقماً.")
     else:
-      # تحديد أسماء الأعمدة بمرونة
       id_col = (
           "National_ID"
           if "National_ID" in teachers_df.columns
@@ -199,6 +253,13 @@ if choice == "تسجيل الحضور":
 
         if not already_logged.empty:
           st.info(f"المعلم/ـة **{name}** مسجل بالفعل لهذا اليوم.")
+          st.session_state["last_ticket"] = {
+              "name": name,
+              "id": nat_id,
+              "school": str(school),
+              "date": current_date,
+              "time": already_logged.iloc[0]["Time"],
+          }
         else:
           new_entry = pd.DataFrame(
               [{
@@ -216,6 +277,51 @@ if choice == "تسجيل الحضور":
               f"تم تسجيل حضور المعلم/ـة: **{name}** بنجاح في تمام الساعة"
               f" {current_time}"
           )
+          st.session_state["last_ticket"] = {
+              "name": name,
+              "id": nat_id,
+              "school": str(school),
+              "date": current_date,
+              "time": current_time,
+          }
+
+  # عرض تذكرة الحضور إذا تم تسجيل أو البحث عن معلم بنجاح
+  if "last_ticket" in st.session_state:
+    t = st.session_state["last_ticket"]
+    st.markdown("---")
+    st.subheader("🎫 معاينة تذكرة الحضور (جاهزة للطباعة 10×15 سم)")
+
+    ticket_html = f"""
+        <div id="printable-ticket" class="ticket-box">
+            <div class="ticket-header">الأكاديمية المهنية للمعلمين</div>
+            <div class="ticket-subheader">فرع محافظة الجيزة</div>
+            <hr style="border: 0.5px solid #10233F;">
+            <div class="ticket-body">
+                <b>السيد/ـة:</b> {t['name']}<br>
+                <b>الرقم القومي:</b> {t['id']}<br>
+                <b>المدرسة/الجهة:</b> {t['school']}<br>
+                <b>التاريخ:</b> {t['date']}<br>
+                <b>وقت الحضور:</b> {t['time']}<br>
+                <b>الحالة:</b> <span style="color: green; font-weight: bold;">تم الحضور ✓</span>
+            </div>
+            <div class="ticket-footer">
+                مع تمنياتنا بالتوفيق والتميز الدائم
+            </div>
+        </div>
+        """
+    st.markdown(ticket_html, unsafe_allow_html=True)
+
+    col_p1, col_p2 = st.columns(2)
+    with col_p1:
+      if st.button("🖨️ طباعة التذكرة", type="primary"):
+        st.markdown(
+            """
+                <script>
+                window.print();
+                </script>
+                """,
+            unsafe_allow_html=True,
+        )
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
