@@ -26,7 +26,6 @@ st.markdown(
         text-align: right;
     }
     
-    /* تنسيق تذكرة الحضور الاحترافية (بحجم 10×15 سم للطباعة) */
     @media print {
         body * {
             visibility: hidden;
