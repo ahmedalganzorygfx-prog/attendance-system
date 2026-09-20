@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتنسيق الطباعة
+# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL
 st.markdown(
     """
     <style>
@@ -24,23 +24,6 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
-    }
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-        #printable-ticket, #printable-ticket * {
-            visibility: visible;
-        }
-        #printable-ticket {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 10cm;
-            height: 15cm;
-            margin: auto;
-            background: white;
-        }
     }
     </style>
     """,
@@ -265,62 +248,117 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {current_time}",
           }
 
-  # عرض التذكرة باستخدام مكونات Streamlit النظيفة (بدون تداخل رموز HTML)
+  # عرض التذكرة مع زر فتح نافذة الطباعة المنفصلة
   if "ticket_data" in st.session_state:
     t = st.session_state["ticket_data"]
     st.markdown("---")
 
     with st.container():
       st.markdown(
-          "<div id='printable-ticket' style='border: 2px solid #10233F;"
-          " padding: 25px; border-radius: 10px; background-color: #ffffff;'>"
+          "<div style='border: 2px solid #10233F; padding: 25px; border-radius:"
+          " 10px; background-color: #ffffff; max-width: 450px; margin: auto;'>"
           "<h3 style='text-align: center; color: #10233F; margin-bottom: 0;'>الأكاديمية"
           " المهنية للمعلمين</h3>"
           "<p style='text-align: center; color: #555; font-size: 14px;'>فرع"
           " الجيزة</p>"
           "<hr style='border: 0.5px solid #10233F;'>"
           "<p style='text-align: center; font-size: 13px; color: #666;'>تذكرة"
-          " أسبقية الحضور</p>",
-          unsafe_allow_html=True,
-      )
-
-      # صندوق رقم الأسبقية
-      st.markdown(
+          " أسبقية الحضور</p>"
           f"<div style='text-align: center; background-color: #fdf8e2; border:"
           " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
           " 15px 0;'><span style='font-size: 26px; font-weight: bold; color:"
-          f" #d9534f;'>[ {t['serial']} ]</span></div>",
-          unsafe_allow_html=True,
-      )
-
-      # تفاصيل المعلم
-      st.markdown(
+          f" #d9534f;'>[ {t['serial']} ]</span></div>"
           f"<div style='font-size: 15px; line-height: 2.2; color:"
           f" #222;'><b>الاسم:</b> {t['name']}<br><b>البرنامج:</b>"
           f" {t['program']}<br><b>الرقم القومي:</b>"
           f" {t['id']}<br><b>كود المعلم:</b> {t['code']}<br><b>الوقت والتاريخ:</b>"
-          f" {t['datetime']}</div>",
-          unsafe_allow_html=True,
-      )
-
-      # صندوق التنبيهات
-      st.warning(
-          "⚠️ تنبيه هام ومستندات مطلوبة:\n\n"
-          "• يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.\n\n"
-          "• صورة بطاقة الرقم القومي سارية.\n\n"
-          "• إيصال الدفع إن وجد."
-      )
-
-      # تذييل التذكرة
-      st.markdown(
+          f" {t['datetime']}</div>"
+          "<div"
+          " style='border: 1px solid #e0a800; background-color: #fff3cd;"
+          " color: #856404; padding: 10px; border-radius: 5px; font-size:"
+          " 12px; margin-top: 15px;'><b>⚠️ تنبيه هام ومستندات"
+          " مطلوبة:</b><br>• يرجى تجهيز صحيفة أحوال إلكترونية حديثة"
+          " معتمدة.<br>• صورة بطاقة الرقم القومي سارية.<br>• إيصال الدفع إن"
+          " وجد.</div>"
           "<p style='text-align: center; font-size: 14px; color: #10233F;"
           " font-weight: bold; margin-top: 15px;'>أهلاً بكم في فرع الجيزة - يرجى"
-          " الانتظار لحين استدعائكم</p>",
+          " الانتظار لحين استدعائكم</p>"
+          "</div>",
           unsafe_allow_html=True,
       )
-      st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # إنشاء كود JavaScript لفتح نافذة منفصلة بطول وعرض التذكرة (10×15 سم تقريباً) وتشغيل الطباعة تلقائياً
+    ticket_html_content = f"""
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>تذكرة الحضور - {t['serial']}</title>
+            <style>
+                body {{
+                    font-family: 'Cairo', Tahoma, sans-serif;
+                    background: #fff;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }}
+                .ticket-container {{
+                    width: 9cm;
+                    padding: 15px;
+                    border: 2px solid #10233F;
+                    border-radius: 10px;
+                    background-color: #ffffff;
+                }}
+                .t-header {{ text-align: center; color: #10233F; font-weight: bold; font-size: 16px; }}
+                .t-subheader {{ text-align: center; color: #444; font-size: 13px; margin-bottom: 5px; }}
+                .priority-box {{ text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 6px; border-radius: 8px; margin: 10px 0; }}
+                .priority-num {{ font-size: 22px; font-weight: bold; color: #d9534f; }}
+                .t-details {{ font-size: 13px; line-height: 1.8; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 8px 0; margin-bottom: 10px; }}
+                .warning-box {{ border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; font-size: 11px; margin-bottom: 10px; }}
+                .t-footer {{ text-align: center; font-size: 12px; color: #10233F; font-weight: bold; }}
+            </style>
+        </head>
+        <body onload="window.print();">
+            <div class="ticket-container">
+                <div class="t-header">الأكاديمية المهنية للمعلمين</div>
+                <div class="t-subheader">فرع الجيزة</div>
+                <hr style="border: 0.5px solid #10233F;">
+                <div style="text-align: center; font-size: 11px; color: #555;">تذكرة أسبقية الحضور</div>
+                <div class="priority-box">
+                    <div class="priority-num">[ {t['serial']} ]</div>
+                </div>
+                <div class="t-details">
+                    <b>الاسم:</b> {t['name']}<br>
+                    <b>البرنامج:</b> {t['program']}<br>
+                    <b>الرقم القومي:</b> {t['id']}<br>
+                    <b>كود المعلم:</b> {t['code']}<br>
+                    <b>الوقت والتاريخ:</b> {t['datetime']}
+                </div>
+                <div class="warning-box">
+                    <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+                    • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+                    • صورة بطاقة الرقم القومي سارية.<br>
+                    • إيصال الدفع إن وجد.
+                </div>
+                <div class="t-footer">
+                    أهلاً بكم في فرع الجيزة - انتظر استدعاءك
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+    # ترميز محتوى النافذة لمروره عبر جافاسكريبت بأمان
+    import base64
+
+    b64_ticket = base64.b64encode(ticket_html_content.encode("utf-8")).decode(
+        "utf-8"
+    )
+
     c1, c2, c3 = st.columns(3)
     with c1:
       if st.button("إغلاق"):
@@ -329,17 +367,30 @@ if choice == "تسجيل الحضور":
         st.rerun()
     with c2:
       if st.button("عرض التذكرة بالكامل", type="secondary"):
-        st.info("التذكرة معروضة بالكامل بالأعلى وجاهزة للطباعة.")
+        st.info("التذكرة معروضة بالكامل بالأعلى.")
     with c3:
-      if st.button("طباعة التذكرة", type="primary"):
-        st.markdown(
+      # زر جافاسكريبت يفتح نافذة منفصلة ويطبعها فوراً
+      popup_js = f"""
+            <script>
+            function openPrintWindow() {{
+                var win = window.open('', '_blank', 'width=500,height=700');
+                win.document.write(atob('{b64_ticket}'));
+                win.document.close();
+            }}
+            </script>
+            <button onclick="openPrintWindow()" style="
+                background-color: #ff4b4b;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                width: 100%;
+            ">🖨️ فتح وطباعة في نافذة منفصلة</button>
             """
-                <script>
-                window.print();
-                </script>
-                """,
-            unsafe_allow_html=True,
-        )
+      st.markdown(popup_js, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
