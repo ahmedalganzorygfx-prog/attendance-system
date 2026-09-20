@@ -9,27 +9,22 @@ st.set_page_config(
         "الأكاديمية المهنية للمعلمين - فرع الجيزة | نظام أسبقية الحضور"
     ),
     page_icon="🏛️",
-    layout="wide",
+    layout="centered",
 )
 
-# تنسيقات الواجهة العامة وتنسيق الطباعة النظيف
+# تنسيقات الواجهة العامة لتشبه التطبيق المكتبي تماماً
 st.markdown(
     """
     <style>
-    h1, h2, h3 {
-        text-align: center;
-    }
     .stApp {
         direction: rtl;
         text-align: right;
-        background-color: #f4f6f9;
+        background-color: #f8f9fa;
     }
     .stSidebar {
         direction: rtl;
         text-align: right;
     }
-    
-    /* تنسيق الطباعة لإخفاء الموقع وإظهار التذكرة فقط */
     @media print {
         body * {
             visibility: hidden;
@@ -41,9 +36,7 @@ st.markdown(
             position: absolute;
             left: 0;
             top: 0;
-            width: 10cm;
-            height: 15cm;
-            margin: auto;
+            width: 100%;
             background: white;
         }
     }
@@ -91,11 +84,15 @@ def init_files():
 
 init_files()
 
-# العنوان العلوي
+# العنوان العلوي مطابق لبرنامج الجهاز
 st.markdown(
-    "<h2 style='color: #10233F; font-size: 22px; text-align: center;'>الأكاديمية"
-    " المهنية للمعلمين - فرع الجيزة<br><span style='font-size: 18px; color:"
-    " #333;'>نظام إصدار تذاكر أسبقية الحضور</span></h2>",
+    "<h3 style='text-align: center; color: #10233F;'>الأكاديمية المهنية للمعلمين"
+    " - فرع الجيزة</h3>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<h4 style='text-align: center; color: #333; font-size: 16px;'>نظام إصدار"
+    " تذاكر أسبقية الحضور</h4>",
     unsafe_allow_html=True,
 )
 st.markdown("---")
@@ -173,30 +170,23 @@ def load_data():
 
 teachers_df, log_df = load_data()
 
-# 1. صفحة إصدار التذاكر
+# 1. صفحة إصدار التذاكر والحضور
 if choice == "إصدار التذاكر والحضور":
 
-  st.markdown(
-      "<fieldset style='border: 1px solid #888; border-radius: 5px; padding:"
-      " 10px;'>"
-      "<legend style='font-size: 14px; font-weight: bold;'>البحث عن المعلم"
-      " (فرع الجيزة)</legend>",
-      unsafe_allow_html=True,
-  )
-
+  # إطار البحث (مطابق لتصميم الجهاز)
+  st.markdown("### البحث عن المعلم (فرع الجيزة)")
   col_search1, col_search2 = st.columns([3, 1])
   with col_search1:
     search_input = st.text_input(
         "ادخل كود المعلم أو الرقم القومي:",
         placeholder="أدخل الكود أو الرقم القومي...",
         key="search_query",
+        label_visibility="collapsed",
     )
   with col_search2:
-    st.markdown("<br>", unsafe_allow_html=True)
-    search_btn = st.button("بحث", type="primary")
+    search_btn = st.button("بحث", type="primary", use_container_width=True)
 
-  st.markdown("</fieldset>", unsafe_allow_html=True)
-  st.markdown("<br>", unsafe_allow_html=True)
+  st.markdown("---")
 
   found_teacher = None
   if search_btn or search_input:
@@ -220,70 +210,54 @@ if choice == "إصدار التذاكر والحضور":
       else:
         st.warning(
             "لم يتم العثور على المعلم. تأكد من صحة الكود أو الرقم القومي، أو قم"
-            " بإضافته من قسم إدارة المعلمين."
+            " بإضافته من قائمة 'إدارة المعلمين'."
         )
 
-  st.markdown(
-      "<fieldset style='border: 1px solid #888; border-radius: 5px; padding:"
-      " 15px; background-color: #fff;'>"
-      "<legend style='font-size: 14px; font-weight: bold;'>بيانات المعلم"
-      " المسجل</legend>",
-      unsafe_allow_html=True,
-  )
+  # إطار بيانات المعلم المسجل (مطابق للصورة تماماً)
+  st.markdown("### بيانات المعلم المسجل")
+  with st.container():
+    if found_teacher is not None:
+      t_code = (
+          found_teacher.get("Code", "---")
+          if "Code" in found_teacher
+          else "3695367"
+      )
+      t_name = (
+          found_teacher.get("Name", "---")
+          if "Name" in found_teacher
+          else "أحمد مجدي محمد عبد القادر"
+      )
+      t_id = (
+          found_teacher.get("National_ID", "---")
+          if "National_ID" in found_teacher
+          else "29610092101373"
+      )
+      t_prog = (
+          found_teacher.get("Program", "تطبيقات تربوية للمعلم المساعد")
+          if "Program" in found_teacher
+          else "تطبيقات تربوية للمعلم المساعد"
+      )
 
-  if found_teacher is not None:
-    t_code = (
-        found_teacher.get("Code", "---")
-        if "Code" in found_teacher
-        else "3695367"
-    )
-    t_name = (
-        found_teacher.get("Name", "---")
-        if "Name" in found_teacher
-        else "أحمد مجدي محمد عبد القادر"
-    )
-    t_id = (
-        found_teacher.get("National_ID", "---")
-        if "National_ID" in found_teacher
-        else "29610092101373"
-    )
-    t_prog = (
-        found_teacher.get("Program", "تطبيقات تربوية للمعلم المساعد")
-        if "Program" in found_teacher
-        else "تطبيقات تربوية للمعلم المساعد"
-    )
+      st.markdown(f"**كود المعلم:** {t_code}")
+      st.markdown(f"**الاسم:** {t_name}")
+      st.markdown(f"**الرقم القومي:** {t_id}")
+      st.markdown(f"**البرنامج:** {t_prog}")
 
-    st.markdown(
-        f"<div style='font-size: 15px; line-height: 2; text-align: right;'>"
-        f"<b>كود المعلم:</b> {t_code}<br>"
-        f"<b>الاسم:</b> <span style='color: #003366; font-weight: bold;'>{t_name}</span><br>"
-        f"<b>الرقم القومي:</b> {t_id}<br>"
-        f"<b>البرنامج:</b> <span style='color: #a94442;'>{t_prog}</span>"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
+      st.session_state["current_selected_teacher"] = {
+          "code": t_code,
+          "name": t_name,
+          "id": t_id,
+          "program": t_prog,
+      }
+    else:
+      st.markdown("كود المعلم: ---")
+      st.markdown("الاسم: ---")
+      st.markdown("الرقم القومي: ---")
+      st.markdown("البرنامج: ---")
 
-    st.session_state["current_selected_teacher"] = {
-        "code": t_code,
-        "name": t_name,
-        "id": t_id,
-        "program": t_prog,
-    }
-  else:
-    st.markdown(
-        "<div style='font-size: 14px; line-height: 2; text-align: right;"
-        " color: #666;'>"
-        "كود المعلم: ---<br>"
-        "الاسم: ---<br>"
-        "الرقم القومي: ---<br>"
-        "البرنامج: ---"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+  st.markdown("---")
 
-  st.markdown("</fieldset>", unsafe_allow_html=True)
-  st.markdown("<br>", unsafe_allow_html=True)
-
+  # زر تأكيد الحضور الأخضر الكبير
   if st.button(
       "تأكيد الحضور وإصدار التذكرة النهائية",
       type="primary",
@@ -343,17 +317,14 @@ if choice == "إصدار التذاكر والحضور":
             "datetime": f"{current_date} | {current_time}",
         }
     else:
-      st.warning(
-          "الرجاء البحث عن المعلم أولاً وإدخال كوده أو رقمه القومي قبل التأكيد."
-      )
+      st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة باستخدام مكونات Streamlit الأصلية والنظيفة 100%
+  # عرض التذكرة بشكل نظيف ومستقل تماماً
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
     st.success("تم تسجيل الحضور وإصدار التذكرة بنجاح")
 
-    # صندوق التذكرة الآمن (بدون أكواد HTML متداخلة)
     with st.container():
       st.markdown(
           "<div id='printable-ticket' style='border: 2px solid #10233F;"
@@ -382,7 +353,6 @@ if choice == "إصدار التذاكر والحضور":
           unsafe_allow_html=True,
       )
 
-      # رقم الأسبقية
       st.markdown(
           f"<div style='text-align: center; background-color: #fdf8e2; border:"
           " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
@@ -391,7 +361,6 @@ if choice == "إصدار التذاكر والحضور":
           unsafe_allow_html=True,
       )
 
-      # بيانات التذكرة
       st.markdown(
           f"<div style='font-size: 15px; line-height: 2.2; color:"
           f" #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;"
@@ -405,7 +374,6 @@ if choice == "إصدار التذاكر والحضور":
           unsafe_allow_html=True,
       )
 
-      # تنبيهات المستندات
       st.warning(
           "⚠️ تنبيه هام ومستندات مطلوبة:\n\n"
           "• يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.\n"
@@ -413,7 +381,6 @@ if choice == "إصدار التذاكر والحضور":
           "• إيصال الدفع إن وجد."
       )
 
-      # التذييل
       st.markdown(
           "<p"
           " style='text-align: center; font-size: 13px; color: #10233F;"
