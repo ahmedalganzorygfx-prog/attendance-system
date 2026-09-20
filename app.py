@@ -35,7 +35,7 @@ TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
 
 
-# وظائف لإنشاء ملفات افتراضية إذا لم تكن موجودة
+# وظائف لإنشاء ملفات افتراضية صحيحة إذا لم تكن موجودة أو كانت تالفة
 def init_files():
   if not os.path.exists(TEACHERS_FILE):
     df_default = pd.DataFrame(
@@ -78,19 +78,17 @@ menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الح
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
 
-# تحميل البيانات مع ضبط الفاصل (;) ومعالجة الترميز تلقائياً
+# تحميل البيانات مع ضبط الفاصل (;) ومعالجة الأعمدة الناقصة تلقائياً
 @st.cache_data(ttl=2)
 def load_data():
+  # قراءة ملف المعلمين
   teachers_df = None
   for enc in ["utf-8-sig", "utf-8", "cp1256", "iso-8859-6", "latin1"]:
     try:
-      # محاولة القراءة باستخدام الفاصلة المنقوطة الموجودة في ملفاتك
       teachers_df = pd.read_csv(
           TEACHERS_FILE, dtype=str, encoding=enc, sep=";"
       )
-      if (
-          len(teachers_df.columns) <= 1
-      ):  # إذا لم ينجح في التقسيم، يجرب الفاصلة العادية
+      if len(teachers_df.columns) <= 1:
         teachers_df = pd.read_csv(
             TEACHERS_FILE, dtype=str, encoding=enc, sep=","
         )
@@ -98,7 +96,7 @@ def load_data():
     except:
       continue
 
-  if teachers_df is None:
+  if teachers_df is None or teachers_df.empty:
     teachers_df = pd.DataFrame(
         columns=[
             "Code",
@@ -112,6 +110,9 @@ def load_data():
         ]
     )
 
+  teachers_df.columns = [c.strip() for c in teachers_df.columns]
+
+  # قراءة ملف السجلات مع التأكد من سلامة الأعمدة
   log_df = None
   for enc in ["utf-8-sig", "utf-8", "cp1256", "iso-8859-6", "latin1"]:
     try:
@@ -124,13 +125,22 @@ def load_data():
       except:
         continue
 
-  if log_df is None:
-    log_df = pd.DataFrame(
-        columns=["National_ID", "Name", "School", "Date", "Time", "Status"]
-    )
+  expected_log_cols = [
+      "National_ID",
+      "Name",
+      "School",
+      "Date",
+      "Time",
+      "Status",
+  ]
+  if log_df is None or len(log_df.columns) < len(expected_log_cols):
+    log_df = pd.DataFrame(columns=expected_log_cols)
+    log_df.to_csv(LOG_FILE, index=False, encoding="utf-8-sig")
 
-  # توحيد أسماء الأعمدة لتجنب أي أخطاء مطبعية
-  teachers_df.columns = [c.strip() for c in teachers_df.columns]
+  log_df.columns = [c.strip() for c in log_df.columns]
+  for col in expected_log_cols:
+    if col not in log_df.columns:
+      log_df[col] = ""
 
   return teachers_df, log_df
 
@@ -149,7 +159,7 @@ if choice == "تسجيل الحضور":
     if len(nat_id) != 14 or not nat_id.isdigit():
       st.error("الرجاء إدخال رقم قومي صحيح مكون من 14 رقماً.")
     else:
-      # البحث عن المعلم باستخدام عمود الرقم القومي
+      # تحديد أسماء الأعمدة بمرونة
       id_col = (
           "National_ID"
           if "National_ID" in teachers_df.columns
@@ -183,7 +193,7 @@ if choice == "تسجيل الحضور":
         current_time = datetime.now().strftime("%H:%M:%S")
 
         already_logged = log_df[
-            (log_df["National_ID"] == nat_id)
+            (log_df["National_ID"].astype(str).str.strip() == nat_id)
             & (log_df["Date"] == current_date)
         ]
 
@@ -262,7 +272,7 @@ elif choice == "إدارة المعلمين":
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
-  if log_df.empty or "National_ID" not in log_df.columns:
+  if log_df.empty or log_df["National_ID"].dropna().empty:
     st.info("لا توجد سجلات حضور حتى الآن.")
   else:
     col1, col2 = st.columns(2)
