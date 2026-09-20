@@ -11,7 +11,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL
+# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وإخفاء عناصر الموقع عند الطباعة المباشرة
 st.markdown(
     """
     <style>
@@ -25,6 +25,28 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
+    }
+    
+    /* عند الطباعة، نقوم بإخفاء كل شي في الموقع ما عدا صندوق التذكرة فقط */
+    @media print {
+        body * {
+            visibility: hidden !important;
+        }
+        #printable-ticket-box, #printable-ticket-box * {
+            visibility: visible !important;
+        }
+        #printable-ticket-box {
+            position: fixed !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 10cm !important;
+            height: 14cm !important;
+            padding: 20px !important;
+            background: white !important;
+            border: 2px solid #10233F !important;
+            z-index: 999999 !important;
+        }
     }
     </style>
     """,
@@ -249,49 +271,47 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {current_time}",
           }
 
-  # عرض المعاينة وزر التحميل/الفتح الآمن للطباعة
+  # عرض التذكرة وتوفير زر طباعة مباشر وزر تحميل ملف تذكرة مستقل
   if "ticket_data" in st.session_state:
     t = st.session_state["ticket_data"]
     st.markdown("---")
 
-    with st.container():
-      st.markdown(
-          "<div style='border: 2px solid #10233F; padding: 25px; border-radius:"
-          " 10px; background-color: #ffffff; max-width: 450px; margin: auto;'>"
-          "<h3 style='text-align: center; color: #10233F; margin-bottom: 0;'>الأكاديمية"
-          " المهنية للمعلمين</h3>"
-          "<p style='text-align: center; color: #555; font-size: 14px;'>فرع"
-          " الجيزة</p>"
-          "<hr style='border: 0.5px solid #10233F;'>"
-          "<p style='text-align: center; font-size: 13px; color: #666;'>تذكرة"
-          " أسبقية الحضور</p>"
-          f"<div style='text-align: center; background-color: #fdf8e2; border:"
-          " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
-          " 15px 0;'><span style='font-size: 26px; font-weight: bold; color:"
-          f" #d9534f;'>[ {t['serial']} ]</span></div>"
-          f"<div style='font-size: 15px; line-height: 2.2; color:"
-          f" #222;'><b>الاسم:</b> {t['name']}<br><b>البرنامج:</b>"
-          f" {t['program']}<br><b>الرقم القومي:</b>"
-          f" {t['id']}<br><b>كود المعلم:</b> {t['code']}<br><b>الوقت والتاريخ:</b>"
-          f" {t['datetime']}</div>"
-          "<div"
-          " style='border: 1px solid #e0a800; background-color: #fff3cd;"
-          " color: #856404; padding: 10px; border-radius: 5px; font-size:"
-          " 12px; margin-top: 15px;'><b>⚠️ تنبيه هام ومستندات"
-          " مطلوبة:</b><br>• يرجى تجهيز صحيفة أحوال إلكترونية حديثة"
-          " معتمدة.<br>• صورة بطاقة الرقم القومي سارية.<br>• إيصال الدفع إن"
-          " وجد.</div>"
-          "<p style='text-align: center; font-size: 14px; color: #10233F;"
-          " font-weight: bold; margin-top: 15px;'>أهلاً بكم في فرع الجيزة - يرجى"
-          " الانتظار لحين استدعائكم</p>"
-          "</div>",
-          unsafe_allow_html=True,
-      )
+    # صندوق المعاينة الخاص بالتذكرة
+    ticket_html_visual = f"""
+        <div id="printable-ticket-box" style="border: 2px solid #10233F; padding: 25px; border-radius: 10px; background-color: #ffffff; max-width: 450px; margin: auto; font-family: 'Cairo', sans-serif;">
+            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
+            <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
+            <hr style="border: 0.5px solid #10233F;">
+            <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
+            
+            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin: 15px 0;">
+                <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {t['serial']} ]</span>
+            </div>
+            
+            <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
+                <b>الاسم:</b> {t['name']}<br>
+                <b>البرنامج:</b> {t['program']}<br>
+                <b>الرقم القومي:</b> {t['id']}<br>
+                <b>كود المعلم:</b> {t['code']}<br>
+                <b>الوقت والتاريخ:</b> {t['datetime']}
+            </div>
+            
+            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px;">
+                <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+                • يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+                • صورة بطاقة الرقم القومي سارية.<br>
+                • إيصال الدفع إن وجد.
+            </div>
+            
+            <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold;">
+                أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
+            </div>
+        </div>
+        """
+    st.markdown(ticket_html_visual, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # قالب صفحة HTML المستقلة للتذكرة
-    ticket_html_content = f"""
+    # إنشاء ملف HTML مستقل وقابل للتنزيل الفوري
+    standalone_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
         <head>
@@ -300,94 +320,76 @@ if choice == "تسجيل الحضور":
             <style>
                 body {{
                     font-family: 'Cairo', Tahoma, sans-serif;
-                    background: #f0f2f6;
+                    background: #fff;
                     display: flex;
-                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                    min-height: 100vh;
+                    height: 100vh;
                     margin: 0;
                 }}
-                .ticket-container {{
+                .ticket-box {{
                     width: 10cm;
-                    min-height: 14cm;
                     padding: 20px;
                     border: 2px solid #10233F;
                     border-radius: 10px;
                     background-color: #ffffff;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                    box-sizing: border-box;
-                }}
-                .t-header {{ text-align: center; color: #10233F; font-weight: bold; font-size: 18px; }}
-                .t-subheader {{ text-align: center; color: #444; font-size: 14px; margin-bottom: 5px; }}
-                .priority-box {{ text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0; }}
-                .priority-num {{ font-size: 26px; font-weight: bold; color: #d9534f; }}
-                .t-details {{ font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px; }}
-                .warning-box {{ border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px; }}
-                .t-footer {{ text-align: center; font-size: 13px; color: #10233F; font-weight: bold; }}
-                .print-btn {{
-                    margin-top: 20px;
-                    background-color: #ff4b4b;
-                    color: white;
-                    padding: 12px 30px;
-                    border: none;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    font-weight: bold;
-                    cursor: pointer;
-                }}
-                .print-btn:hover {{ background-color: #e03e3e; }}
-                @media print {{
-                    .print-btn {{ display: none; }}
-                    body {{ background: white; }}
-                    .ticket-container {{ border: none; box-shadow: none; width: 100%; }}
                 }}
             </style>
         </head>
-        <body>
-            <div class="ticket-container">
-                <div class="t-header">الأكاديمية المهنية للمعلمين</div>
-                <div class="t-subheader">فرع الجيزة</div>
+        <body onload="window.print();">
+            <div style="border: 2px solid #10233F; padding: 25px; border-radius: 10px; width: 10cm; background-color: #ffffff; font-family: 'Cairo', sans-serif;">
+                <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
+                <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
                 <hr style="border: 0.5px solid #10233F;">
-                <div style="text-align: center; font-size: 12px; color: #555;">تذكرة أسبقية الحضور</div>
-                <div class="priority-box">
-                    <div class="priority-num">[ {t['serial']} ]</div>
+                <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
+                
+                <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin: 15px 0;">
+                    <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {t['serial']} ]</span>
                 </div>
-                <div class="t-details">
+                
+                <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
                     <b>الاسم:</b> {t['name']}<br>
                     <b>البرنامج:</b> {t['program']}<br>
                     <b>الرقم القومي:</b> {t['id']}<br>
                     <b>كود المعلم:</b> {t['code']}<br>
                     <b>الوقت والتاريخ:</b> {t['datetime']}
                 </div>
-                <div class="warning-box">
+                
+                <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px;">
                     <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
                     • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
                     • صورة بطاقة الرقم القومي سارية.<br>
                     • إيصال الدفع إن وجد.
                 </div>
-                <div class="t-footer">
+                
+                <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold;">
                     أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
                 </div>
             </div>
-            <button class="print-btn" onclick="window.print()">🖨️ اضغط هنا للطباعة</button>
         </body>
         </html>
         """
 
-    b64 = base64.b64encode(ticket_html_content.encode("utf-8")).decode("utf-8")
-    href = f'<a href="data:text/html;base64,{b64}" target="_blank" style="text-decoration: none;"><button style="background-color: #ff4b4b; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ فتح التذكرة في صفحة مستقلة للطباعة</button></a>'
+    b64_data = base64.b64encode(standalone_html.encode("utf-8")).decode("utf-8")
+    download_link = f'<a href="data:text/html;base64,{b64_data}" download="ticket_{t["serial"]}.html" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">📥 تحميل ملف التذكرة (جاهز للطباعة)</button></a>'
 
+    st.markdown("<br>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
-      if st.button("إغلاق"):
+      if st.button("إغلاق التذكرة"):
         if "ticket_data" in st.session_state:
           del st.session_state["ticket_data"]
         st.rerun()
     with c2:
-      st.info("التذكرة جاهزة بالأسفل للفتح والطباعة الآمنة.")
+      # زر طباعة مباشر يعتمد على تنسيق CSS المخفي
+      st.markdown(
+          """
+            <button onclick="window.print()" style="background-color: #ff4b4b; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ طباعة التذكرة مباشرة</button>
+            """,
+          unsafe_allow_html=True,
+      )
     with c3:
-      st.markdown(href, unsafe_allow_html=True)
+      st.markdown(download_link, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
@@ -466,5 +468,5 @@ elif choice == "سجل الحضور والتقارير":
         label="📥 تحميل السجل كملف CSV",
         data=csv_data,
         file_name=f"attendance_giza_{filter_date}.csv",
-        mime="text/css",
+        mime="text/csv",
     )
