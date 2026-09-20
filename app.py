@@ -4,6 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 # إعدادات صفحة Streamlit
 st.set_page_config(
@@ -306,7 +307,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع زر التحميل المباشر الآمن 100%
+  # عرض التذكرة مع زر فتح نافذة منفصلة ذكي
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -363,7 +364,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل للتحميل والطباعة أو حفظه كـ PDF
+    # قالب HTML مستقل متمركز تماماً لفتحه في نافذة جديدة بضغطة زر عبر JavaScript
     standalone_ticket_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
@@ -395,6 +396,7 @@ if choice == "إصدار التذاكر والحضور":
                     margin-top: 20px;
                     display: flex;
                     gap: 15px;
+                    justify-content: center;
                 }}
                 .btn {{
                     background-color: #ff4b4b;
@@ -449,10 +451,27 @@ if choice == "إصدار التذاكر والحضور":
             
             <div class="actions">
                 <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
-                <button class="btn btn-pdf" onclick="window.print()">📥 حفظ بصيغة PDF</button>
             </div>
         </body>
         </html>
+        """
+
+    b64_ticket = base64.b64encode(
+        standalone_ticket_html.encode("utf-8")
+    ).decode("utf-8")
+
+    # زر جافاسكريبت متقدم يفتح النافذة المنفصلة فوراً وبدون حظر
+    popup_button_html = f"""
+        <script>
+        function openTicketWindow() {{
+            var win = window.open('', '_blank', 'width=500,height=700,scrollbars=yes');
+            win.document.write(atob("{b64_ticket}"));
+            win.document.close();
+        }}
+        </script>
+        <button onclick="openTicketWindow()" style="width: 100%; background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Cairo', sans-serif;">
+            🌐 فتح التذكرة في نافذة منفصلة للطباعة
+        </button>
         """
 
     b_col1, b_col2 = st.columns(2)
@@ -464,13 +483,7 @@ if choice == "إصدار التذاكر والحضور":
           del st.session_state["current_selected_teacher"]
         st.rerun()
     with b_col2:
-      st.download_button(
-          label="📥 تحميل التذكرة (جاهزة للطباعة / PDF)",
-          data=standalone_ticket_html,
-          file_name=f"ticket_{tk['serial']}.html",
-          mime="text/html",
-          use_container_width=True,
-      )
+      components.html(popup_button_html, height=60)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
