@@ -117,7 +117,6 @@ TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
 
 
-# تهيئة الملفات إذا لم تكن موجودة
 def init_files():
   if not os.path.exists(TEACHERS_FILE):
     df_default = pd.DataFrame(
@@ -162,7 +161,6 @@ menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الح
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
 
-# تحميل البيانات مع معالجة الترميز والأعمدة
 @st.cache_data(ttl=2)
 def load_data():
   teachers_df = None
@@ -283,7 +281,6 @@ if choice == "تسجيل الحضور":
         current_date = datetime.now().strftime("%Y-%m-%d")
         current_time = datetime.now().strftime("%I:%M:%S %p")
 
-        # التحقق مما إذا تم تسجيل الحضور مسبقاً اليوم
         already_logged = log_df[
             (log_df["National_ID"].astype(str).str.strip() == nat_id)
             & (log_df["Date"] == current_date)
@@ -301,7 +298,6 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {already_logged.iloc[0]['Time']}",
           }
         else:
-          # توليد رقم أسبقية تسلسلي لليوم
           today_logs = log_df[log_df["Date"] == current_date]
           serial_num = len(today_logs) + 1
           serial_str = f"A-{serial_num:03d}"
@@ -334,7 +330,6 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {current_time}",
           }
 
-  # عرض التذكرة المطابقة للصورة المرفقة
   if "ticket_data" in st.session_state:
     t = st.session_state["ticket_data"]
     st.markdown("---")
