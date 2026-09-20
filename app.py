@@ -1,4 +1,3 @@
-import base64
 import os
 from datetime import datetime
 import pandas as pd
@@ -302,7 +301,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة باستخدام مكونات Streamlit النظيفة 100% دون أي رموز HTML ظاهرة
+  # عرض التذكرة مع زر التحميل المباشر الآمن 100%
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -359,7 +358,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل ونظيف لفتحه في نافذة جديدة والطباعة/PDF
+    # قالب HTML مستقل للتحميل والطباعة أو حفظه كـ PDF
     standalone_ticket_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
@@ -451,11 +450,6 @@ if choice == "إصدار التذاكر والحضور":
         </html>
         """
 
-    b64_ticket = base64.b64encode(
-        standalone_ticket_html.encode("utf-8")
-    ).decode("utf-8")
-    open_window_link = f'<a href="data:text/html;base64,{b64_ticket}" target="_blank" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🌐 فتح التذكرة متمركزة في نافذة مستقلة للطباعة / PDF</button></a>'
-
     b_col1, b_col2 = st.columns(2)
     with b_col1:
       if st.button("إغلاق وإصدار تذكرة جديدة", use_container_width=True):
@@ -465,7 +459,14 @@ if choice == "إصدار التذاكر والحضور":
           del st.session_state["current_selected_teacher"]
         st.rerun()
     with b_col2:
-      st.markdown(open_window_link, unsafe_allow_html=True)
+      # استخدام زر تحميل رسمي آمن لا يتم حظره أونلاين
+      st.download_button(
+          label="📥 تحميل التذكرة (جاهزة للطباعة / PDF)",
+          data=standalone_ticket_html,
+          file_name=f"ticket_{tk['serial']}.html",
+          mime="text/html",
+          use_container_width=True,
+      )
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
@@ -531,7 +532,7 @@ elif choice == "سجل الحضور والتقارير":
   else:
     col1, col2 = st.columns(2)
     with col1:
-      filter_date = st.date_input("تصفية حسب التاريخ", datetime.now())
+      filter_date = st.date_input(" تصفية حسب التاريخ", datetime.now())
 
     filtered_log = log_df[log_df["Date"] == str(filter_date)]
 
