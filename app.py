@@ -1,4 +1,3 @@
-import base64
 import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -307,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع زر فتح نافذة منفصلة يدعم الترميز العربي الصحيح
+  # عرض التذكرة مع زر فتح نافذة منفصلة بتقنية Blob الآمنة للغة العربية
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -364,106 +363,101 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مدعوم بالكامل بالخطوط القياسية للغة العربية لتجنب ظهور علامات الاستفهام
-    standalone_ticket_html = f"""
-        <!DOCTYPE html>
-        <html lang="ar" dir="rtl">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            <title>تذكرة الحضور - {tk['serial']}</title>
-            <style>
-                body {{
-                    font-family: 'Tahoma', 'Arial', sans-serif;
-                    background: #f8f9fa;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                }}
-                .ticket-box {{
-                    width: 10cm;
-                    padding: 20px;
-                    border: 2px solid #10233F;
-                    border-radius: 10px;
-                    background-color: #ffffff;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-                    box-sizing: border-box;
-                    text-align: right;
-                }}
-                .actions {{
-                    margin-top: 20px;
-                    display: flex;
-                    justify-content: center;
-                }}
-                .btn {{
-                    background-color: #ff4b4b;
-                    color: white;
-                    padding: 12px 25px;
-                    border: none;
-                    border-radius: 6px;
-                    font-size: 16px;
-                    font-weight: bold;
-                    cursor: pointer;
-                }}
-                @media print {{
-                    .actions {{ display: none; }}
-                    body {{ background: white; }}
-                    .ticket-box {{ border: none; box-shadow: none; width: 100%; }}
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="ticket-box">
-                <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
-                <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
-                <hr style="border: 0.5px solid #10233F;">
-                <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
-                
-                <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0;">
-                    <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
-                </div>
-                
-                <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
-                    <b>الاسم:</b> {tk['name']}<br>
-                    <b>البرنامج:</b> {tk['program']}<br>
-                    <b>الرقم القومي:</b> {tk['id']}<br>
-                    <b>كود المعلم:</b> {tk['code']}<br>
-                    <b>الوقت والتاريخ:</b> {tk['datetime']}
-                </div>
-                
-                <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px;">
-                    <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
-                    • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
-                    • صورة بطاقة الرقم القومي سارية.<br>
-                    • إيصال الدفع إن وجد.
-                </div>
-                
-                <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold;">
-                    أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
-            </div>
-        </body>
-        </html>
-        """
+    # قالب HTML مستقل بتنسيق احترافي وترميز UTF-8 سليم 100%
+    standalone_ticket_html = f"""<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>تذكرة الحضور - {tk['serial']}</title>
+    <style>
+        body {{
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }}
+        .ticket-box {{
+            width: 10cm;
+            padding: 20px;
+            border: 2px solid #10233F;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            text-align: right;
+        }}
+        .actions {{
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }}
+        .btn {{
+            background-color: #ff4b4b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }}
+        @media print {{
+            .actions {{ display: none; }}
+            body {{ background: white; }}
+            .ticket-box {{ border: none; box-shadow: none; width: 100%; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="ticket-box">
+        <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
+        <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
+        <hr style="border: 0.5px solid #10233F;">
+        <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
+        
+        <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0;">
+            <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+        </div>
+        
+        <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
+            <b>الاسم:</b> {tk['name']}<br>
+            <b>البرنامج:</b> {tk['program']}<br>
+            <b>الرقم القومي:</b> {tk['id']}<br>
+            <b>كود المعلم:</b> {tk['code']}<br>
+            <b>الوقت والتاريخ:</b> {tk['datetime']}
+        </div>
+        
+        <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px;">
+            <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+            • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+            • صورة بطاقة الرقم القومي سارية.<br>
+            • إيصال الدفع إن وجد.
+        </div>
+        
+        <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold;">
+            أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
+        </div>
+    </div>
+    
+    <div class="actions">
+        <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
+    </div>
+</body>
+</html>"""
 
-    b64_ticket = base64.b64encode(
-        standalone_ticket_html.encode("utf-8")
-    ).decode("utf-8")
-
+    # طريقة Blob الاحترافية لفتح نافذة مستقلة بترميز عربي سليم 100% دون أي مربعات
     popup_button_html = f"""
         <script>
         function openTicketWindow() {{
-            var win = window.open('', '_blank', 'width=500,height=700,scrollbars=yes');
-            win.document.open();
-            win.document.write(atob("{b64_ticket}"));
-            win.document.close();
+            var htmlContent = {repr(standalone_ticket_html)};
+            var blob = new Blob([htmlContent], {{ type: 'text/html;charset=utf-8' }});
+            var blobUrl = URL.createObjectURL(blob);
+            var win = window.open(blobUrl, '_blank', 'width=500,height=700,scrollbars=yes');
         }}
         </script>
         <button onclick="openTicketWindow()" style="width: 100%; background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
