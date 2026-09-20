@@ -13,7 +13,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# تنسيقات الواجهة العامة وتنسيق الطباعة والحفظ كـ PDF
+# تنسيقات الواجهة العامة
 st.markdown(
     """
     <style>
@@ -25,26 +25,6 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
-    }
-    
-    @media print {
-        body * {
-            visibility: hidden !important;
-        }
-        #printable-ticket-box, #printable-ticket-box * {
-            visibility: visible !important;
-        }
-        #printable-ticket-box {
-            position: fixed !important;
-            left: 50% !important;
-            top: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            width: 10cm !important;
-            background: white !important;
-            border: 2px solid #10233F !important;
-            padding: 20px !important;
-            z-index: 999999 !important;
-        }
     }
     </style>
     """,
@@ -322,82 +302,54 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع أزرار الحفظ كـ PDF والفتح والطباعة الآمنة
+  # عرض التذكرة مع زر فتح وتوسيط التذكرة في نافذة مستقلة وجاهزة للطباعة/PDF
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
     st.success("تم تسجيل الحضور وإصدار التذكرة بنجاح")
 
-    with st.container():
+    # معاينة مصغرة في منتصف الصفحة
+    col_center1, col_center2, col_center3 = st.columns([1, 2, 1])
+    with col_center2:
       st.markdown(
-          "<div id='printable-ticket-box' style='border: 2px solid #10233F;"
-          " padding: 25px; border-radius: 8px; background-color: #ffffff;"
-          " max-width: 450px; margin: auto;'>",
+          f"""
+            <div style='border: 2px solid #10233F; padding: 20px; border-radius: 8px; background-color: #ffffff;'>
+                <div style='text-align: center; color: #10233F; font-weight: bold; font-size: 18px;'>الأكاديمية المهنية للمعلمين</div>
+                <div style='text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;'>فرع الجيزة</div>
+                <hr style='border: 0.5px solid #10233F;'>
+                <div style='text-align: center; font-size: 12px; color: #666;'>تذكرة أسبقية الحضور</div>
+                
+                <div style='text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 12px 0;'>
+                    <span style='font-size: 24px; font-weight: bold; color: #d9534f;'>[ {tk['serial']} ]</span>
+                </div>
+                
+                <div style='font-size: 14px; line-height: 1.8; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 8px 0; margin-bottom: 12px;'>
+                    <b>الاسم:</b> {tk['name']}<br>
+                    <b>البرنامج:</b> {tk['program']}<br>
+                    <b>الرقم القومي:</b> {tk['id']}<br>
+                    <b>كود المعلم:</b> {tk['code']}<br>
+                    <b>الوقت والتاريخ:</b> {tk['datetime']}
+                </div>
+                
+                <div style='border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; font-size: 11px; margin-bottom: 12px;'>
+                    <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+                    • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+                    • صورة بطاقة الرقم القومي سارية.<br>
+                    • إيصال الدفع إن وجد.
+                </div>
+                
+                <div style='text-align: center; font-size: 12px; color: #10233F; font-weight: bold;'>
+                    أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
+                </div>
+            </div>
+            """,
           unsafe_allow_html=True,
       )
-
-      st.markdown(
-          "<h3"
-          " style='text-align: center; color: #10233F; margin-bottom: 0;'>الأكاديمية"
-          " المهنية للمعلمين</h3>",
-          unsafe_allow_html=True,
-      )
-      st.markdown(
-          "<p"
-          " style='text-align: center; color: #555; font-size: 14px;"
-          " margin-top: 0;'>فرع الجيزة</p>",
-          unsafe_allow_html=True,
-      )
-      st.markdown("---")
-      st.markdown(
-          "<p"
-          " style='text-align: center; font-size: 13px; color:"
-          " #666;'>تذكرة أسبقية الحضور</p>",
-          unsafe_allow_html=True,
-      )
-
-      st.markdown(
-          f"<div style='text-align: center; background-color: #fdf8e2; border:"
-          " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
-          " 15px 0;'><span style='font-size: 26px; font-weight: bold; color:"
-          f" #d9534f;'>[ {tk['serial']} ]</span></div>",
-          unsafe_allow_html=True,
-      )
-
-      st.markdown(
-          f"<div style='font-size: 15px; line-height: 2.2; color:"
-          f" #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;"
-          " padding: 10px 0;'>"
-          f"<b>الاسم:</b> {tk['name']}<br>"
-          f"<b>البرنامج:</b> {tk['program']}<br>"
-          f"<b>الرقم القومي:</b> {tk['id']}<br>"
-          f"<b>كود المعلم:</b> {tk['code']}<br>"
-          f"<b>الوقت والتاريخ:</b> {tk['datetime']}"
-          "</div>",
-          unsafe_allow_html=True,
-      )
-
-      st.warning(
-          "⚠️ تنبيه هام ومستندات مطلوبة:\n\n"
-          "• يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.\n"
-          "• صورة بطاقة الرقم القومي سارية.\n"
-          "• إيصال الدفع إن وجد."
-      )
-
-      st.markdown(
-          "<p"
-          " style='text-align: center; font-size: 13px; color: #10233F;"
-          " font-weight: bold; margin-top: 15px;'>أهلاً بكم في فرع الجيزة - يرجى"
-          " الانتظار لحين استدعائكم</p>",
-          unsafe_allow_html=True,
-      )
-
-      st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل مع أزرار للطباعة والحفظ الفوري كـ PDF
-    standalone_ticket_html = f"""
+    # كود HTML للتذكرة متمركز تماماً في المنتصف (يعمل عند الفتح في نافذة مستقلة)
+    centered_ticket_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
         <head>
@@ -406,7 +358,7 @@ if choice == "إصدار التذاكر والحضور":
             <style>
                 body {{
                     font-family: 'Cairo', Tahoma, sans-serif;
-                    background: #f0f2f6;
+                    background: #f8f9fa;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -420,20 +372,22 @@ if choice == "إصدار التذاكر والحضور":
                     border: 2px solid #10233F;
                     border-radius: 10px;
                     background-color: #ffffff;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                    box-sizing: border-box;
+                    text-align: right;
                 }}
                 .actions {{
                     margin-top: 20px;
                     display: flex;
-                    gap: 10px;
+                    gap: 15px;
                 }}
                 .btn {{
                     background-color: #ff4b4b;
                     color: white;
-                    padding: 12px 20px;
+                    padding: 12px 25px;
                     border: none;
                     border-radius: 6px;
-                    font-size: 15px;
+                    font-size: 16px;
                     font-weight: bold;
                     cursor: pointer;
                 }}
@@ -455,7 +409,7 @@ if choice == "إصدار التذاكر والحضور":
                 <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
                 
                 <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0;">
-                    <span style="font-size: 24px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+                    <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
                 </div>
                 
                 <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
@@ -487,27 +441,19 @@ if choice == "إصدار التذاكر والحضور":
         """
 
     b64_ticket = base64.b64encode(
-        standalone_ticket_html.encode("utf-8")
+        centered_ticket_html.encode("utf-8")
     ).decode("utf-8")
-    open_window_link = f'<a href="data:text/html;base64,{b64_ticket}" target="_blank" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🌐 فتح التذكرة في نافذة مستقلة للطباعة / PDF</button></a>'
+    open_window_link = f'<a href="data:text/html;base64,{b64_ticket}" target="_blank" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">🌐 فتح التذكرة متمركزة في نافذة مستقلة للطباعة / PDF</button></a>'
 
-    b_col1, b_col2, b_col3 = st.columns(3)
+    b_col1, b_col2 = st.columns(2)
     with b_col1:
-      if st.button("إغلاق", use_container_width=True):
+      if st.button("إغلاق وإصدار تذكرة جديدة", use_container_width=True):
         if "show_ticket_modal" in st.session_state:
           del st.session_state["show_ticket_modal"]
         if "current_selected_teacher" in st.session_state:
           del st.session_state["current_selected_teacher"]
         st.rerun()
     with b_col2:
-      # زر طباعة مباشر داخل الصفحة الحالية
-      st.markdown(
-          """
-            <button onclick="window.print()" style="background-color: #ff4b4b; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ طباعة سريعة</button>
-            """,
-          unsafe_allow_html=True,
-      )
-    with b_col3:
       st.markdown(open_window_link, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
