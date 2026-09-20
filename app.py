@@ -55,11 +55,20 @@ st.markdown("---")
 menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الحضور والتقارير"]
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
-# تحميل البيانات
+
+# تحميل البيانات مع معالجة الترميز تلقائياً
 @st.cache_data(ttl=2)
 def load_data():
-  teachers_df = pd.read_csv(TEACHERS_FILE, dtype=str)
-  log_df = pd.read_csv(LOG_FILE, dtype=str)
+  try:
+    teachers_df = pd.read_csv(TEACHERS_FILE, dtype=str, encoding="utf-8-sig")
+  except:
+    teachers_df = pd.read_csv(TEACHERS_FILE, dtype=str, encoding="latin1")
+
+  try:
+    log_df = pd.read_csv(LOG_FILE, dtype=str, encoding="utf-8-sig")
+  except:
+    log_df = pd.read_csv(LOG_FILE, dtype=str, encoding="latin1")
+
   return teachers_df, log_df
 
 
