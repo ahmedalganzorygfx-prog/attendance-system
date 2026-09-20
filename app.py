@@ -306,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع زر فتح نافذة منفصلة بالمقاس المعدل بدقة (10x15 سم)
+  # عرض التذكرة مع زر فتح نافذة منفصلة تملأ كامل المساحة (10x15 سم)
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -363,7 +363,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل مضبوط بمقاس 10x15 سم (يعادل 4x6 إنش في الطابعات)
+    # قالب HTML مستقل تم ضبط محتوياته لملء مساحة 10×15 سم بالكامل باحترافية
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -389,9 +389,9 @@ if choice == "إصدار التذاكر والحضور":
         .ticket-box {{
             width: 10cm;
             height: 15cm;
-            padding: 12mm;
+            padding: 10mm 12mm;
             box-sizing: border-box;
-            border: 2px solid #10233F;
+            border: 3px solid #10233F;
             background-color: #ffffff;
             text-align: right;
             display: flex;
@@ -400,7 +400,7 @@ if choice == "إصدار التذاكر والحضور":
         }}
         .actions {{
             position: fixed;
-            bottom: 15px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -420,23 +420,23 @@ if choice == "إصدار التذاكر والحضور":
         @media print {{
             .actions {{ display: none; }}
             body {{ background: white; }}
-            .ticket-box {{ border: none; width: 10cm; height: 15cm; padding: 10mm; }}
+            .ticket-box {{ border: none; width: 10cm; height: 15cm; padding: 8mm 10mm; }}
         }}
     </style>
 </head>
 <body>
     <div class="ticket-box">
         <div>
-            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 17px;">الأكاديمية المهنية للمعلمين</div>
-            <div style="text-align: center; color: #555; font-size: 13px; margin-bottom: 2px;">فرع الجيزة</div>
-            <hr style="border: 0.5px solid #10233F; margin: 6px 0;">
-            <div style="text-align: center; font-size: 11px; color: #666;">تذكرة أسبقية الحضور</div>
+            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 20px; margin-bottom: 2px;">الأكاديمية المهنية للمعلمين</div>
+            <div style="text-align: center; color: #555; font-size: 15px; margin-bottom: 5px;">فرع الجيزة</div>
+            <hr style="border: 1px solid #10233F; margin: 8px 0;">
+            <div style="text-align: center; font-size: 13px; color: #666; font-weight: bold;">تذكرة أسبقية الحضور</div>
             
-            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 6px; border-radius: 6px; margin: 10px 0;">
-                <span style="font-size: 24px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+            <div style="text-align: center; background-color: #fdf8e2; border: 2px dashed #C9A227; padding: 10px; border-radius: 8px; margin: 12px 0;">
+                <span style="font-size: 28px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
             </div>
             
-            <div style="font-size: 13px; line-height: 1.8; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 6px 0; margin-bottom: 10px;">
+            <div style="font-size: 14.5px; line-height: 2.1; color: #111; border-top: 1.5px solid #ccc; border-bottom: 1.5px solid #ccc; padding: 8px 0; margin-bottom: 12px;">
                 <b>الاسم:</b> {tk['name']}<br>
                 <b>البرنامج:</b> {tk['program']}<br>
                 <b>الرقم القومي:</b> {tk['id']}<br>
@@ -444,7 +444,7 @@ if choice == "إصدار التذاكر والحضور":
                 <b>الوقت والتاريخ:</b> {tk['datetime']}
             </div>
             
-            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 6px; border-radius: 4px; font-size: 10.5px; margin-bottom: 8px;">
+            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 12px; line-height: 1.6; margin-bottom: 8px;">
                 <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
                 • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
                 • صورة بطاقة الرقم القومي سارية.<br>
@@ -452,13 +452,13 @@ if choice == "إصدار التذاكر والحضور":
             </div>
         </div>
         
-        <div style="text-align: center; font-size: 11.5px; color: #10233F; font-weight: bold; margin-bottom: 5px;">
+        <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold; padding-top: 5px; border-top: 1px dashed #ddd;">
             أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
         </div>
     </div>
     
     <div class="actions">
-        <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة بمقاس 10*15</button>
+        <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
     </div>
 </body>
 </html>"""
@@ -469,11 +469,11 @@ if choice == "إصدار التذاكر والحضور":
             var htmlContent = {repr(standalone_ticket_html)};
             var blob = new Blob([htmlContent], {{ type: 'text/html;charset=utf-8' }});
             var blobUrl = URL.createObjectURL(blob);
-            var win = window.open(blobUrl, '_blank', 'width=450,height=650,scrollbars=yes');
+            var win = window.open(blobUrl, '_blank', 'width=480,height=700,scrollbars=yes');
         }}
         </script>
         <button onclick="openTicketWindow()" style="width: 100%; background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🌐 فتح التذكرة بمقاس 10*15 في نافذة منفصلة
+            🌐 فتح التذكرة بحجم كامل (10*15) في نافذة منفصلة
         </button>
         """
 
