@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتصميم التذكرة الاحترافي
+# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتنسيق الطباعة
 st.markdown(
     """
     <style>
@@ -25,7 +25,6 @@ st.markdown(
         direction: rtl;
         text-align: right;
     }
-    
     @media print {
         body * {
             visibility: hidden;
@@ -40,71 +39,8 @@ st.markdown(
             width: 10cm;
             height: 15cm;
             margin: auto;
-            padding: 15px;
-            border: 2px solid #10233F;
             background: white;
         }
-    }
-    
-    .ticket-container {
-        width: 100%;
-        max-width: 450px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 2px solid #10233F;
-        border-radius: 10px;
-        background-color: #ffffff;
-        font-family: 'Cairo', sans-serif;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
-    }
-    .t-header {
-        text-align: center;
-        color: #10233F;
-        font-weight: bold;
-        font-size: 18px;
-    }
-    .t-subheader {
-        text-align: center;
-        color: #444;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-    .priority-box {
-        text-align: center;
-        background-color: #fdf8e2;
-        border: 1.5px dashed #C9A227;
-        padding: 8px;
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-    .priority-num {
-        font-size: 24px;
-        font-weight: bold;
-        color: #d9534f;
-    }
-    .t-details {
-        font-size: 14px;
-        line-height: 2;
-        color: #222;
-        border-top: 1px solid #ddd;
-        border-bottom: 1px solid #ddd;
-        padding: 10px 0;
-        margin-bottom: 15px;
-    }
-    .warning-box {
-        border: 1px solid #e0a800;
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        margin-bottom: 15px;
-    }
-    .t-footer {
-        text-align: center;
-        font-size: 13px;
-        color: #10233F;
-        font-weight: bold;
     }
     </style>
     """,
@@ -329,42 +265,60 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {current_time}",
           }
 
+  # عرض التذكرة باستخدام مكونات Streamlit النظيفة (بدون تداخل رموز HTML)
   if "ticket_data" in st.session_state:
     t = st.session_state["ticket_data"]
     st.markdown("---")
 
-    ticket_html = f"""
-        <div id="printable-ticket" class="ticket-container">
-            <div class="t-header">الأكاديمية المهنية للمعلمين</div>
-            <div class="t-subheader">فرع الجيزة</div>
-            <hr style="border: 0.5px solid #10233F;">
-            
-            <div style="text-align: center; font-size: 12px; color: #555;">تذكرة أسبقية الحضور</div>
-            <div class="priority-box">
-                <div class="priority-num">[ {t['serial']} ]</div>
-            </div>
-            
-            <div class="t-details">
-                <b>الاسم:</b> {t['name']}<br>
-                <b>البرنامج:</b> {t['program']}<br>
-                <b>الرقم القومي:</b> {t['id']}<br>
-                <b>كود المعلم:</b> {t['code']}<br>
-                <b>الوقت والتاريخ:</b> {t['datetime']}
-            </div>
-            
-            <div class="warning-box">
-                <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
-                • يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
-                • صورة بطاقة الرقم القومي سارية.<br>
-                • إيصال الدفع إن وجد.
-            </div>
-            
-            <div class="t-footer">
-                أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
-            </div>
-        </div>
-        """
-    st.markdown(ticket_html, unsafe_allow_html=True)
+    with st.container():
+      st.markdown(
+          "<div id='printable-ticket' style='border: 2px solid #10233F;"
+          " padding: 25px; border-radius: 10px; background-color: #ffffff;'>"
+          "<h3 style='text-align: center; color: #10233F; margin-bottom: 0;'>الأكاديمية"
+          " المهنية للمعلمين</h3>"
+          "<p style='text-align: center; color: #555; font-size: 14px;'>فرع"
+          " الجيزة</p>"
+          "<hr style='border: 0.5px solid #10233F;'>"
+          "<p style='text-align: center; font-size: 13px; color: #666;'>تذكرة"
+          " أسبقية الحضور</p>",
+          unsafe_allow_html=True,
+      )
+
+      # صندوق رقم الأسبقية
+      st.markdown(
+          f"<div style='text-align: center; background-color: #fdf8e2; border:"
+          " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
+          " 15px 0;'><span style='font-size: 26px; font-weight: bold; color:"
+          f" #d9534f;'>[ {t['serial']} ]</span></div>",
+          unsafe_allow_html=True,
+      )
+
+      # تفاصيل المعلم
+      st.markdown(
+          f"<div style='font-size: 15px; line-height: 2.2; color:"
+          f" #222;'><b>الاسم:</b> {t['name']}<br><b>البرنامج:</b>"
+          f" {t['program']}<br><b>الرقم القومي:</b>"
+          f" {t['id']}<br><b>كود المعلم:</b> {t['code']}<br><b>الوقت والتاريخ:</b>"
+          f" {t['datetime']}</div>",
+          unsafe_allow_html=True,
+      )
+
+      # صندوق التنبيهات
+      st.warning(
+          "⚠️ تنبيه هام ومستندات مطلوبة:\n\n"
+          "• يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.\n\n"
+          "• صورة بطاقة الرقم القومي سارية.\n\n"
+          "• إيصال الدفع إن وجد."
+      )
+
+      # تذييل التذكرة
+      st.markdown(
+          "<p style='text-align: center; font-size: 14px; color: #10233F;"
+          " font-weight: bold; margin-top: 15px;'>أهلاً بكم في فرع الجيزة - يرجى"
+          " الانتظار لحين استدعائكم</p>",
+          unsafe_allow_html=True,
+      )
+      st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
