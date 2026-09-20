@@ -1,3 +1,4 @@
+import base64
 import os
 from datetime import datetime
 import pandas as pd
@@ -248,7 +249,7 @@ if choice == "تسجيل الحضور":
               "datetime": f"{current_date} | {current_time}",
           }
 
-  # عرض التذكرة مع زر فتح نافذة الطباعة المنفصلة
+  # عرض المعاينة وزر التحميل/الفتح الآمن للطباعة
   if "ticket_data" in st.session_state:
     t = st.session_state["ticket_data"]
     st.markdown("---")
@@ -289,7 +290,7 @@ if choice == "تسجيل الحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # إنشاء كود JavaScript لفتح نافذة منفصلة بطول وعرض التذكرة (10×15 سم تقريباً) وتشغيل الطباعة تلقائياً
+    # قالب صفحة HTML المستقلة للتذكرة
     ticket_html_content = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
@@ -299,35 +300,56 @@ if choice == "تسجيل الحضور":
             <style>
                 body {{
                     font-family: 'Cairo', Tahoma, sans-serif;
-                    background: #fff;
+                    background: #f0f2f6;
                     display: flex;
+                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                    height: 100vh;
+                    min-height: 100vh;
                     margin: 0;
                 }}
                 .ticket-container {{
-                    width: 9cm;
-                    padding: 15px;
+                    width: 10cm;
+                    min-height: 14cm;
+                    padding: 20px;
                     border: 2px solid #10233F;
                     border-radius: 10px;
                     background-color: #ffffff;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                    box-sizing: border-box;
                 }}
-                .t-header {{ text-align: center; color: #10233F; font-weight: bold; font-size: 16px; }}
-                .t-subheader {{ text-align: center; color: #444; font-size: 13px; margin-bottom: 5px; }}
-                .priority-box {{ text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 6px; border-radius: 8px; margin: 10px 0; }}
-                .priority-num {{ font-size: 22px; font-weight: bold; color: #d9534f; }}
-                .t-details {{ font-size: 13px; line-height: 1.8; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 8px 0; margin-bottom: 10px; }}
-                .warning-box {{ border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; font-size: 11px; margin-bottom: 10px; }}
-                .t-footer {{ text-align: center; font-size: 12px; color: #10233F; font-weight: bold; }}
+                .t-header {{ text-align: center; color: #10233F; font-weight: bold; font-size: 18px; }}
+                .t-subheader {{ text-align: center; color: #444; font-size: 14px; margin-bottom: 5px; }}
+                .priority-box {{ text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0; }}
+                .priority-num {{ font-size: 26px; font-weight: bold; color: #d9534f; }}
+                .t-details {{ font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px; }}
+                .warning-box {{ border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px; }}
+                .t-footer {{ text-align: center; font-size: 13px; color: #10233F; font-weight: bold; }}
+                .print-btn {{
+                    margin-top: 20px;
+                    background-color: #ff4b4b;
+                    color: white;
+                    padding: 12px 30px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }}
+                .print-btn:hover {{ background-color: #e03e3e; }}
+                @media print {{
+                    .print-btn {{ display: none; }}
+                    body {{ background: white; }}
+                    .ticket-container {{ border: none; box-shadow: none; width: 100%; }}
+                }}
             </style>
         </head>
-        <body onload="window.print();">
+        <body>
             <div class="ticket-container">
                 <div class="t-header">الأكاديمية المهنية للمعلمين</div>
                 <div class="t-subheader">فرع الجيزة</div>
                 <hr style="border: 0.5px solid #10233F;">
-                <div style="text-align: center; font-size: 11px; color: #555;">تذكرة أسبقية الحضور</div>
+                <div style="text-align: center; font-size: 12px; color: #555;">تذكرة أسبقية الحضور</div>
                 <div class="priority-box">
                     <div class="priority-num">[ {t['serial']} ]</div>
                 </div>
@@ -345,19 +367,16 @@ if choice == "تسجيل الحضور":
                     • إيصال الدفع إن وجد.
                 </div>
                 <div class="t-footer">
-                    أهلاً بكم في فرع الجيزة - انتظر استدعاءك
+                    أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
                 </div>
             </div>
+            <button class="print-btn" onclick="window.print()">🖨️ اضغط هنا للطباعة</button>
         </body>
         </html>
         """
 
-    # ترميز محتوى النافذة لمروره عبر جافاسكريبت بأمان
-    import base64
-
-    b64_ticket = base64.b64encode(ticket_html_content.encode("utf-8")).decode(
-        "utf-8"
-    )
+    b64 = base64.b64encode(ticket_html_content.encode("utf-8")).decode("utf-8")
+    href = f'<a href="data:text/html;base64,{b64}" target="_blank" style="text-decoration: none;"><button style="background-color: #ff4b4b; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ فتح التذكرة في صفحة مستقلة للطباعة</button></a>'
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -366,31 +385,9 @@ if choice == "تسجيل الحضور":
           del st.session_state["ticket_data"]
         st.rerun()
     with c2:
-      if st.button("عرض التذكرة بالكامل", type="secondary"):
-        st.info("التذكرة معروضة بالكامل بالأعلى.")
+      st.info("التذكرة جاهزة بالأسفل للفتح والطباعة الآمنة.")
     with c3:
-      # زر جافاسكريبت يفتح نافذة منفصلة ويطبعها فوراً
-      popup_js = f"""
-            <script>
-            function openPrintWindow() {{
-                var win = window.open('', '_blank', 'width=500,height=700');
-                win.document.write(atob('{b64_ticket}'));
-                win.document.close();
-            }}
-            </script>
-            <button onclick="openPrintWindow()" style="
-                background-color: #ff4b4b;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                width: 100%;
-            ">🖨️ فتح وطباعة في نافذة منفصلة</button>
-            """
-      st.markdown(popup_js, unsafe_allow_html=True)
+      st.markdown(href, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
@@ -469,5 +466,5 @@ elif choice == "سجل الحضور والتقارير":
         label="📥 تحميل السجل كملف CSV",
         data=csv_data,
         file_name=f"attendance_giza_{filter_date}.csv",
-        mime="text/csv",
+        mime="text/css",
     )
