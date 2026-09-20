@@ -307,7 +307,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع زر فتح نافذة منفصلة ذكي
+  # عرض التذكرة مع زر فتح نافذة منفصلة يدعم الترميز العربي الصحيح
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -364,16 +364,17 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل متمركز تماماً لفتحه في نافذة جديدة بضغطة زر عبر JavaScript
+    # قالب HTML مدعوم بالكامل بالخطوط القياسية للغة العربية لتجنب ظهور علامات الاستفهام
     standalone_ticket_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
         <head>
             <meta charset="UTF-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <title>تذكرة الحضور - {tk['serial']}</title>
             <style>
                 body {{
-                    font-family: 'Cairo', Tahoma, sans-serif;
+                    font-family: 'Tahoma', 'Arial', sans-serif;
                     background: #f8f9fa;
                     display: flex;
                     flex-direction: column;
@@ -395,7 +396,6 @@ if choice == "إصدار التذاكر والحضور":
                 .actions {{
                     margin-top: 20px;
                     display: flex;
-                    gap: 15px;
                     justify-content: center;
                 }}
                 .btn {{
@@ -407,9 +407,6 @@ if choice == "إصدار التذاكر والحضور":
                     font-size: 16px;
                     font-weight: bold;
                     cursor: pointer;
-                }}
-                .btn-pdf {{
-                    background-color: #28a745;
                 }}
                 @media print {{
                     .actions {{ display: none; }}
@@ -460,16 +457,16 @@ if choice == "إصدار التذاكر والحضور":
         standalone_ticket_html.encode("utf-8")
     ).decode("utf-8")
 
-    # زر جافاسكريبت متقدم يفتح النافذة المنفصلة فوراً وبدون حظر
     popup_button_html = f"""
         <script>
         function openTicketWindow() {{
             var win = window.open('', '_blank', 'width=500,height=700,scrollbars=yes');
+            win.document.open();
             win.document.write(atob("{b64_ticket}"));
             win.document.close();
         }}
         </script>
-        <button onclick="openTicketWindow()" style="width: 100%; background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Cairo', sans-serif;">
+        <button onclick="openTicketWindow()" style="width: 100%; background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
             🌐 فتح التذكرة في نافذة منفصلة للطباعة
         </button>
         """
