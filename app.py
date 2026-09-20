@@ -14,18 +14,13 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* محاذاة العناوين الرئيسية والفرعية في المنتصف */
     h1, h2, h3 {
         text-align: center;
     }
-    
-    /* جعل اتجاه التطبيق من اليمين ليسار ودعم اللغة العربية */
     .stApp {
         direction: rtl;
         text-align: right;
     }
-    
-    /* ضبط محاذاة عناصر القائمة الجانبية والقوائم المنسدلة */
     .stSidebar {
         direction: rtl;
         text-align: right;
@@ -40,7 +35,7 @@ TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
 
 
-# وظائف لإنشاء ملفات افتراضية إذا لم تكن موجودة لضمان عمل التطبيق
+# وظائف لإنشاء ملفات افتراضية إذا لم تكن موجودة
 def init_files():
   if not os.path.exists(TEACHERS_FILE):
     df_default = pd.DataFrame(
@@ -71,7 +66,7 @@ def init_files():
 
 init_files()
 
-# العنوان الرئيسي للتطبيق (سيظهر في المنتصف تلقائياً)
+# العنوان الرئيسي للتطبيق
 st.title("🏛️ نظام تسجيل ومتابعة الحضور")
 st.subheader("فرع الأكاديمية المهنية للمعلمين بالجيزة")
 st.markdown("---")
@@ -81,7 +76,7 @@ menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الح
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
 
-# تحميل البيانات مع معالجة الترميز تلقائياً
+# تحميل البيانات مع معالجة الترميز والأعمدة الناقصة تلقائياً
 @st.cache_data(ttl=2)
 def load_data():
   try:
@@ -93,6 +88,31 @@ def load_data():
     log_df = pd.read_csv(LOG_FILE, dtype=str, encoding="utf-8-sig")
   except:
     log_df = pd.read_csv(LOG_FILE, dtype=str, encoding="latin1")
+
+  # التأكد من وجود الأعمدة الأساسية لتعادي أي خطأ في الملفات القديمة
+  expected_teacher_cols = [
+      "National_ID",
+      "Name",
+      "School",
+      "Administration",
+      "Phone",
+      "Job_Title",
+  ]
+  for col in expected_teacher_cols:
+    if col not in teachers_df.columns:
+      teachers_df[col] = ""
+
+  expected_log_cols = [
+      "National_ID",
+      "Name",
+      "School",
+      "Date",
+      "Time",
+      "Status",
+  ]
+  for col in expected_log_cols:
+    if col not in log_df.columns:
+      log_df[col] = ""
 
   return teachers_df, log_df
 
@@ -199,7 +219,7 @@ elif choice == "إدارة المعلمين":
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
-  if log_df.empty:
+  if log_df.empty or log_df["National_ID"].dropna().empty:
     st.info("لا توجد سجلات حضور حتى الآن.")
   else:
     col1, col2 = st.columns(2)
