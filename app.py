@@ -13,7 +13,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# تنسيقات الواجهة العامة وتنسيق الطباعة المباشرة داخل الصفحة
+# تنسيقات الواجهة العامة وتنسيق الطباعة والحفظ كـ PDF
 st.markdown(
     """
     <style>
@@ -322,7 +322,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع زر التحميل المباشر وزر الطباعة داخل الصفحة
+  # عرض التذكرة مع أزرار الحفظ كـ PDF والفتح والطباعة الآمنة
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -396,7 +396,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل للتنزيل والطباعة الفورية الآمنة
+    # قالب HTML مستقل مع أزرار للطباعة والحفظ الفوري كـ PDF
     standalone_ticket_html = f"""
         <!DOCTYPE html>
         <html lang="ar" dir="rtl">
@@ -406,7 +406,7 @@ if choice == "إصدار التذاكر والحضور":
             <style>
                 body {{
                     font-family: 'Cairo', Tahoma, sans-serif;
-                    background: #fff;
+                    background: #f0f2f6;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -420,24 +420,34 @@ if choice == "إصدار التذاكر والحضور":
                     border: 2px solid #10233F;
                     border-radius: 10px;
                     background-color: #ffffff;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 }}
-                .print-btn {{
+                .actions {{
                     margin-top: 20px;
+                    display: flex;
+                    gap: 10px;
+                }}
+                .btn {{
                     background-color: #ff4b4b;
                     color: white;
-                    padding: 12px 25px;
+                    padding: 12px 20px;
                     border: none;
                     border-radius: 6px;
-                    font-size: 16px;
+                    font-size: 15px;
                     font-weight: bold;
                     cursor: pointer;
                 }}
+                .btn-pdf {{
+                    background-color: #28a745;
+                }}
                 @media print {{
-                    .print-btn {{ display: none; }}
+                    .actions {{ display: none; }}
+                    body {{ background: white; }}
+                    .ticket-box {{ border: none; box-shadow: none; width: 100%; }}
                 }}
             </style>
         </head>
-        <body onload="window.print();">
+        <body>
             <div class="ticket-box">
                 <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
                 <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
@@ -467,7 +477,11 @@ if choice == "إصدار التذاكر والحضور":
                     أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
                 </div>
             </div>
-            <button class="print-btn" onclick="window.print()">🖨️ طباعة التذكرة مرة أخرى</button>
+            
+            <div class="actions">
+                <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
+                <button class="btn btn-pdf" onclick="window.print()">📥 حفظ بصيغة PDF</button>
+            </div>
         </body>
         </html>
         """
@@ -475,7 +489,7 @@ if choice == "إصدار التذاكر والحضور":
     b64_ticket = base64.b64encode(
         standalone_ticket_html.encode("utf-8")
     ).decode("utf-8")
-    download_link = f'<a href="data:text/html;base64,{b64_ticket}" download="ticket_{tk["serial"]}.html" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">📥 تحميل ملف التذكرة (جاهز للطباعة)</button></a>'
+    open_window_link = f'<a href="data:text/html;base64,{b64_ticket}" target="_blank" style="text-decoration: none;"><button style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🌐 فتح التذكرة في نافذة مستقلة للطباعة / PDF</button></a>'
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
@@ -486,15 +500,15 @@ if choice == "إصدار التذاكر والحضور":
           del st.session_state["current_selected_teacher"]
         st.rerun()
     with b_col2:
-      # زر طباعة مباشر يعتمد على CSS المخفي فوق
+      # زر طباعة مباشر داخل الصفحة الحالية
       st.markdown(
           """
-            <button onclick="window.print()" style="background-color: #ff4b4b; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ طباعة التذكرة</button>
+            <button onclick="window.print()" style="background-color: #ff4b4b; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ طباعة سريعة</button>
             """,
           unsafe_allow_html=True,
       )
     with b_col3:
-      st.markdown(download_link, unsafe_allow_html=True)
+      st.markdown(open_window_link, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
