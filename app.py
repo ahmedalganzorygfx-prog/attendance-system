@@ -306,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع رفع رسالة الترحيب وتنسيق المحتويات بدقة داخل مقاس 10*15 سم
+  # عرض التذكرة مع ترتيب رسالة الترحيب تحت التنبيه وتوزيع البيانات لتناسب مقاس 10*15 سم
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -363,7 +363,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل مع دمج مساحات وعناصر التذكرة بالكامل لضمان عدم خروج أي سطر لصفحة ثانية
+    # قالب HTML مستقل مع وضع رسالة الترحيب تحت التنبيه وتوزيع دقيق لتملاء مساحة 10*15 سم
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -428,21 +428,17 @@ if choice == "إصدار التذاكر والحضور":
 <body>
     <div class="ticket-box">
         <div>
-            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 16px; margin-top: 2px;">الأكاديمية المهنية للمعلمين</div>
+            <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 17px; margin-top: 2px;">الأكاديمية المهنية للمعلمين</div>
             <div style="text-align: center; color: #555; font-size: 12px; margin-bottom: 2px;">فرع الجيزة</div>
             <hr style="border: 0.8px solid #10233F; margin: 3px 0;">
             
-            <div style="text-align: center; font-size: 12px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 4px; border-radius: 4px; margin-bottom: 4px;">
-                أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
-            </div>
-
-            <div style="text-align: center; font-size: 11px; color: #666;">تذكرة أسبقية الحضور</div>
+            <div style="text-align: center; font-size: 11px; color: #666; margin-bottom: 2px;">تذكرة أسبقية الحضور</div>
             
-            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 5px; border-radius: 6px; margin: 5px 0;">
-                <span style="font-size: 22px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+            <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 4px; border-radius: 6px; margin: 3px 0;">
+                <span style="font-size: 21px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
             </div>
             
-            <div style="font-size: 12.5px; line-height: 1.6; color: #111; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 4px 0; margin-bottom: 5px;">
+            <div style="font-size: 12px; line-height: 1.5; color: #111; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 3px 0; margin-bottom: 4px;">
                 <b>الاسم:</b> {tk['name']}<br>
                 <b>البرنامج:</b> {tk['program']}<br>
                 <b>الرقم القومي:</b> {tk['id']}<br>
@@ -450,11 +446,15 @@ if choice == "إصدار التذاكر والحضور":
                 <b>الوقت والتاريخ:</b> {tk['datetime']}
             </div>
             
-            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 5px; border-radius: 4px; font-size: 10px; line-height: 1.4;">
+            <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 5px; border-radius: 4px; font-size: 10px; line-height: 1.4; margin-bottom: 4px;">
                 <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
                 • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
                 • صورة بطاقة الرقم القومي سارية.<br>
                 • إيصال الدفع إن وجد.
+            </div>
+
+            <div style="text-align: center; font-size: 11.5px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 5px; border-radius: 4px; margin-top: 4px;">
+                أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
             </div>
         </div>
         
