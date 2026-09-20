@@ -1,3 +1,4 @@
+import base64
 import os
 from datetime import datetime
 import pandas as pd
@@ -24,21 +25,6 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
-    }
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-        #printable-ticket, #printable-ticket * {
-            visibility: visible;
-        }
-        #printable-ticket {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white;
-        }
     }
     </style>
     """,
@@ -173,7 +159,6 @@ teachers_df, log_df = load_data()
 # 1. صفحة إصدار التذاكر والحضور
 if choice == "إصدار التذاكر والحضور":
 
-  # إطار البحث (مطابق لتصميم الجهاز)
   st.markdown("### البحث عن المعلم (فرع الجيزة)")
   col_search1, col_search2 = st.columns([3, 1])
   with col_search1:
@@ -213,7 +198,6 @@ if choice == "إصدار التذاكر والحضور":
             " بإضافته من قائمة 'إدارة المعلمين'."
         )
 
-  # إطار بيانات المعلم المسجل (مطابق للصورة تماماً)
   st.markdown("### بيانات المعلم المسجل")
   with st.container():
     if found_teacher is not None:
@@ -257,7 +241,6 @@ if choice == "إصدار التذاكر والحضور":
 
   st.markdown("---")
 
-  # زر تأكيد الحضور الأخضر الكبير
   if st.button(
       "تأكيد الحضور وإصدار التذكرة النهائية",
       type="primary",
@@ -319,7 +302,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة بشكل نظيف ومستقل تماماً
+  # عرض التذكرة مع أزرار الطباعة والفتح الآمن
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -327,9 +310,9 @@ if choice == "إصدار التذاكر والحضور":
 
     with st.container():
       st.markdown(
-          "<div id='printable-ticket' style='border: 2px solid #10233F;"
-          " padding: 25px; border-radius: 8px; background-color: #ffffff;"
-          " max-width: 450px; margin: auto;'>",
+          "<div style='border: 2px solid #10233F; padding: 25px;"
+          " border-radius: 8px; background-color: #ffffff; max-width: 450px;"
+          " margin: auto;'>",
           unsafe_allow_html=True,
       )
 
@@ -393,6 +376,87 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # إنشاء كود HTML مستقل للطباعة الآمنة الفورية
+    standalone_ticket_html = f"""
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>تذكرة الحضور - {tk['serial']}</title>
+            <style>
+                body {{
+                    font-family: 'Cairo', Tahoma, sans-serif;
+                    background: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                }}
+                .ticket-box {{
+                    width: 10cm;
+                    padding: 20px;
+                    border: 2px solid #10233F;
+                    border-radius: 10px;
+                    background-color: #ffffff;
+                }}
+                .print-btn {{
+                    margin-top: 20px;
+                    background-color: #ff4b4b;
+                    color: white;
+                    padding: 12px 25px;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }}
+                @media print {{
+                    .print-btn {{ display: none; }}
+                }}
+            </style>
+        </head>
+        <body onload="window.print();">
+            <div class="ticket-box">
+                <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
+                <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
+                <hr style="border: 0.5px solid #10233F;">
+                <div style="text-align: center; font-size: 12px; color: #666;">تذكرة أسبقية الحضور</div>
+                
+                <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 8px; border-radius: 8px; margin: 15px 0;">
+                    <span style="font-size: 24px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
+                </div>
+                
+                <div style="font-size: 14px; line-height: 2; color: #222; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 10px 0; margin-bottom: 15px;">
+                    <b>الاسم:</b> {tk['name']}<br>
+                    <b>البرنامج:</b> {tk['program']}<br>
+                    <b>الرقم القومي:</b> {tk['id']}<br>
+                    <b>كود المعلم:</b> {tk['code']}<br>
+                    <b>الوقت والتاريخ:</b> {tk['datetime']}
+                </div>
+                
+                <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px; margin-bottom: 15px;">
+                    <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+                    • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+                    • صورة بطاقة الرقم القومي سارية.<br>
+                    • إيصال الدفع إن وجد.
+                </div>
+                
+                <div style="text-align: center; font-size: 13px; color: #10233F; font-weight: bold;">
+                    أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
+                </div>
+            </div>
+            <button class="print-btn" onclick="window.print()">🖨️ طباعة التذكرة مرة أخرى</button>
+        </body>
+        </html>
+        """
+
+    b64_ticket = base64.b64encode(
+        standalone_ticket_html.encode("utf-8")
+    ).decode("utf-8")
+    print_link = f'<a href="data:text/html;base64,{b64_ticket}" target="_blank" style="text-decoration: none;"><button style="background-color: #ff4b4b; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%;">🖨️ طباعة التذكرة النهائية</button></a>'
+
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
       if st.button("إغلاق", use_container_width=True):
@@ -403,17 +467,9 @@ if choice == "إصدار التذاكر والحضور":
         st.rerun()
     with b_col2:
       if st.button("عرض التذكرة بالكامل", type="secondary", use_container_width=True):
-        st.info("التذكرة معروضة بالكامل بالأعلى وجاهزة للطباعة.")
+        st.info("التذكرة معروضة بالكامل بالأعلى.")
     with b_col3:
-      if st.button("طباعة التذكرة", type="primary", use_container_width=True):
-        st.markdown(
-            """
-                <script>
-                window.print();
-                </script>
-                """,
-            unsafe_allow_html=True,
-        )
+      st.markdown(print_link, unsafe_allow_html=True)
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
