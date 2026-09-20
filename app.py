@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة لتشبه التطبيق المكتبي (RTL وتصميم الأزرار والمربعات)
+# تنسيقات الواجهة لتشبه التطبيق المكتبي (RTL وتنسيق الطباعة)
 st.markdown(
     """
     <style>
@@ -29,16 +29,7 @@ st.markdown(
         text-align: right;
     }
     
-    /* تنسيق صندوق بيانات المعلم ليكون مطابقاً للصورة */
-    .teacher-box {
-        border: 2px solid #888;
-        padding: 20px;
-        border-radius: 5px;
-        background-color: #ffffff;
-        margin-bottom: 20px;
-    }
-    
-    /* تنسيق طباعة التذكرة */
+    /* تنسيق طباعة التذكرة لإخفاء باقي الموقع وطباعة الصندوق فقط */
     @media print {
         body * {
             visibility: hidden;
@@ -54,21 +45,8 @@ st.markdown(
             height: 15cm;
             margin: auto;
             padding: 15px;
-            border: 2px solid #10233F;
             background: white;
         }
-    }
-    
-    .ticket-container {
-        width: 100%;
-        max-width: 450px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 2px solid #10233F;
-        border-radius: 5px;
-        background-color: #ffffff;
-        font-family: 'Cairo', sans-serif;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
     }
     </style>
     """,
@@ -196,10 +174,9 @@ def load_data():
 
 teachers_df, log_df = load_data()
 
-# 1. صفحة إصدار التذاكر (مطابقة تماماً لتصميم البرنامج المكتبي)
+# 1. صفحة إصدار التذاكر
 if choice == "إصدار التذاكر والحضور":
 
-  # صندوق البحث العلوي المطابق للصورة
   st.markdown(
       "<fieldset style='border: 1px solid #888; border-radius: 5px; padding:"
       " 10px;'>"
@@ -222,7 +199,6 @@ if choice == "إصدار التذاكر والحضور":
   st.markdown("</fieldset>", unsafe_allow_html=True)
   st.markdown("<br>", unsafe_allow_html=True)
 
-  # البحث عن المعلم في قاعدة البيانات (بالكود أو الرقم القومي)
   found_teacher = None
   if search_btn or search_input:
     query = search_input.strip()
@@ -248,7 +224,6 @@ if choice == "إصدار التذاكر والحضور":
             " بإضافته من قسم إدارة المعلمين."
         )
 
-  # صندوق بيانات المعلم المسجل (مطابق للصورة الثانية)
   st.markdown(
       "<fieldset style='border: 1px solid #888; border-radius: 5px; padding:"
       " 15px; background-color: #fff;'>"
@@ -310,14 +285,16 @@ if choice == "إصدار التذاكر والحضور":
   st.markdown("</fieldset>", unsafe_allow_html=True)
   st.markdown("<br>", unsafe_allow_html=True)
 
-  # زر تأكيد الحضور وإصدار التذكرة النهائية (الأخضر الكبير تماماً كالصورة)
-  if st.button("تأكيد الحضور وإصدار التذكرة النهائية", type="primary", use_container_width=True):
+  if st.button(
+      "تأكيد الحضور وإصدار التذكرة النهائية",
+      type="primary",
+      use_container_width=True,
+  ):
     if "current_selected_teacher" in st.session_state:
       ft = st.session_state["current_selected_teacher"]
       current_date = datetime.now().strftime("%Y-%m-%d")
       current_time = datetime.now().strftime("%I:%M:%S %p")
 
-      # التحقق من عدم التكرار اليومي
       already_logged = log_df[
           (log_df["National_ID"].astype(str).str.strip() == str(ft["id"]))
           & (log_df["Date"] == current_date)
@@ -371,7 +348,7 @@ if choice == "إصدار التذاكر والحضور":
           "الرجاء البحث عن المعلم أولاً وإدخال كوده أو رقمه القومي قبل التأكيد."
       )
 
-  # نافذة أو صندوق عرض التذكرة النهائية (مطابقة تماماً للصورة الثالثة)
+  # عرض التذكرة بشكل سليم وآمن تماماً
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -382,7 +359,7 @@ if choice == "إصدار التذاكر والحضور":
     )
 
     ticket_html = f"""
-        <div id="printable-ticket" class="ticket-container">
+        <div id="printable-ticket" style="width: 100%; max-width: 450px; margin: 0 auto; padding: 20px; border: 2px solid #10233F; border-radius: 5px; background-color: #ffffff; font-family: 'Cairo', sans-serif; box-shadow: 0px 4px 15px rgba(0,0,0,0.1);">
             <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
             <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
             <hr style="border: 0.5px solid #10233F;">
@@ -415,7 +392,6 @@ if choice == "إصدار التذاكر والحضور":
     st.markdown(ticket_html, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # أزرار التحكم الثلاثة (إغلاق، عرض التذكرة بالكامل، طباعة التذكرة) تماماً كالصورة
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
       if st.button("إغلاق", use_container_width=True):
@@ -491,7 +467,7 @@ elif choice == "إدارة المعلمين":
           st.rerun()
 
   st.subheader("قائمة المعلمين المسجلين:")
-  st.dataframe(teachers_df, use_container_width=True)
+  st.dataframe(teachers_df, use_container_width+True)
 
 # 3. صفحة سجل الحضور والتقارير
 elif choice == "سجل الحضور والتقارير":
@@ -516,5 +492,5 @@ elif choice == "سجل الحضور والتقارير":
         label="📥 تحميل السجل كملف CSV",
         data=csv_data,
         file_name=f"attendance_giza_{filter_date}.csv",
-        mime="text/csv",
+        mime="text/css",
     )
