@@ -10,6 +10,31 @@ st.set_page_config(
     layout="wide",
 )
 
+# كود CSS لتوسيط العنوان وضبط الاتجاه من اليمين لليسار (RTL)
+st.markdown(
+    """
+    <style>
+    /* محاذاة العناوين الرئيسية والفرعية في المنتصف */
+    h1, h2, h3 {
+        text-align: center;
+    }
+    
+    /* جعل اتجاه التطبيق من اليمين ليسار ودعم اللغة العربية */
+    .stApp {
+        direction: rtl;
+        text-align: right;
+    }
+    
+    /* ضبط محاذاة عناصر القائمة الجانبية والقوائم المنسدلة */
+    .stSidebar {
+        direction: rtl;
+        text-align: right;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # أسماء ملفات البيانات
 TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
@@ -46,7 +71,7 @@ def init_files():
 
 init_files()
 
-# العنوان الرئيسي للتطبيق
+# العنوان الرئيسي للتطبيق (سيظهر في المنتصف تلقائياً)
 st.title("🏛️ نظام تسجيل ومتابعة الحضور")
 st.subheader("فرع الأكاديمية المهنية للمعلمين بالجيزة")
 st.markdown("---")
