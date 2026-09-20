@@ -306,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع إضافة شعار الفرع أعلى العنوان بدقة داخل مقاس 10*15 سم
+  # عرض التذكرة مع استخدام ملف Logo.png الموجود في المستودع
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -315,11 +315,8 @@ if choice == "إصدار التذاكر والحضور":
     col_c1, col_c2, col_c3 = st.columns([1, 2, 1])
     with col_c2:
       with st.container(border=True):
-        st.markdown(
-            "<div style='text-align: center; font-size: 24px; margin-bottom: 0;"
-            "'>🏛️</div>",
-            unsafe_allow_html=True,
-        )
+        if os.path.exists("Logo.png"):
+          st.image("Logo.png", width=70)
         st.markdown(
             "<h4 style='text-align: center; color: #10233F; margin:0;'>الأكاديمية"
             " المهنية للمعلمين</h4>",
@@ -368,7 +365,22 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # قالب HTML مستقل مع إضافة شعار الأكاديمية أعلى العنوان تماماً
+    # تحويل الشعار إلى Base64 ليظهر بسلاسة داخل النافذة المنفصلة للطباعة
+    import base64
+
+    logo_base64 = ""
+    if os.path.exists("Logo.png"):
+      with open("Logo.png", "rb") as f:
+        logo_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+    logo_img_tag = (
+        f'<img src="data:image/png;base64,{logo_base64}"'
+        ' style="max-height: 50px; display: block; margin: 0 auto 3px auto;" />'
+        if logo_base64
+        else '<div style="text-align: center; font-size: 22px;">🏛️</div>'
+    )
+
+    # قالب HTML مستقل يعرض اللوجو من المستودع بدقة عالية
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -433,8 +445,7 @@ if choice == "إصدار التذاكر والحضور":
 <body>
     <div class="ticket-box">
         <div>
-            <!-- شعار / لوجو الفرع أعلى العنوان -->
-            <div style="text-align: center; font-size: 22px; margin-bottom: 2px;">🏛️</div>
+            {logo_img_tag}
             <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 18px;">الأكاديمية المهنية للمعلمين</div>
             <div style="text-align: center; color: #555; font-size: 13px; margin-bottom: 3px;">فرع الجيزة</div>
             <hr style="border: 1px solid #10233F; margin: 4px 0;">
