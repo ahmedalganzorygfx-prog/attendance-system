@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتصميم تذكرة الطباعة بحجم 10*15 سم
+# تنسيقات الواجهة وتوسيط العنوان واتجاه RTL وتصميم التذكرة الاحترافي
 st.markdown(
     """
     <style>
@@ -26,7 +26,7 @@ st.markdown(
         text-align: right;
     }
     
-    /* تنسيق تذكرة الطباعة (بحجم تقريبي 10×15 سم / أو أبعاد بطاقة احترافية) */
+    /* تنسيق تذكرة الحضور الاحترافية (بحجم 10×15 سم للطباعة) */
     @media print {
         body * {
             visibility: hidden;
@@ -41,46 +41,71 @@ st.markdown(
             width: 10cm;
             height: 15cm;
             margin: auto;
-            padding: 20px;
-            border: 2px solid #000;
+            padding: 15px;
+            border: 2px solid #10233F;
             background: white;
         }
     }
     
-    .ticket-box {
+    .ticket-container {
         width: 100%;
-        max-width: 400px;
-        margin: 20px auto;
-        padding: 25px;
-        border: 2px dashed #10233F;
-        border-radius: 15px;
-        background-color: #f9f9f9;
-        text-align: center;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 2px solid #10233F;
+        border-radius: 10px;
+        background-color: #ffffff;
         font-family: 'Cairo', sans-serif;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
     }
-    .ticket-header {
-        font-size: 18px;
-        font-weight: bold;
+    .t-header {
+        text-align: center;
         color: #10233F;
-        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 18px;
     }
-    .ticket-subheader {
+    .t-subheader {
+        text-align: center;
+        color: #444;
         font-size: 14px;
-        color: #555;
+        margin-bottom: 10px;
+    }
+    .priority-box {
+        text-align: center;
+        background-color: #fdf8e2;
+        border: 1.5px dashed #C9A227;
+        padding: 8px;
+        border-radius: 8px;
+        margin: 15px 0;
+    }
+    .priority-num {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d9534f;
+    }
+    .t-details {
+        font-size: 14px;
+        line-height: 2;
+        color: #222;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
         margin-bottom: 15px;
     }
-    .ticket-body {
-        text-align: right;
-        font-size: 15px;
-        margin-bottom: 20px;
-        line-height: 1.8;
-    }
-    .ticket-footer {
+    .warning-box {
+        border: 1px solid #e0a800;
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 10px;
+        border-radius: 5px;
         font-size: 12px;
-        color: #777;
-        border-top: 1px solid #ddd;
-        padding-top: 10px;
+        margin-bottom: 15px;
+    }
+    .t-footer {
+        text-align: center;
+        font-size: 13px;
+        color: #10233F;
+        font-weight: bold;
     }
     </style>
     """,
@@ -92,7 +117,7 @@ TEACHERS_FILE = "teachers_database.csv"
 LOG_FILE = "attendance_log_giza.csv"
 
 
-# وظائف لإنشاء ملفات افتراضية صحيحة إذا لم تكن موجودة
+# تهيئة الملفات إذا لم تكن موجودة
 def init_files():
   if not os.path.exists(TEACHERS_FILE):
     df_default = pd.DataFrame(
@@ -115,6 +140,8 @@ def init_files():
             "National_ID",
             "Name",
             "School",
+            "Program",
+            "Code_ID",
             "Date",
             "Time",
             "Status",
@@ -135,7 +162,7 @@ menu = ["تسجيل الحضور", "إدارة المعلمين", "سجل الح
 choice = st.sidebar.selectbox("القائمة الرئيسية", menu)
 
 
-# تحميل البيانات مع ضبط الفاصل ومعالجة الأعمدة الناقصة تلقائياً
+# تحميل البيانات مع معالجة الترميز والأعمدة
 @st.cache_data(ttl=2)
 def load_data():
   teachers_df = None
@@ -184,6 +211,8 @@ def load_data():
       "National_ID",
       "Name",
       "School",
+      "Program",
+      "Code_ID",
       "Date",
       "Time",
       "Status",
@@ -204,13 +233,13 @@ teachers_df, log_df = load_data()
 
 # 1. صفحة تسجيل الحضور
 if choice == "تسجيل الحضور":
-  st.header("📝 تسجيل حضور المعلمين")
+  st.header("📝 تسجيل حضور المعلمين وإصدار التذكرة")
 
   nat_id = st.text_input(
       "أدخل الرقم القومي (14 رقم):", max_chars=14, key="nat_id_input"
   )
 
-  if st.button("تسجيل الحضور", type="primary"):
+  if st.button("تسجيل الحضور وإصدار التذكرة", type="primary"):
     if len(nat_id) != 14 or not nat_id.isdigit():
       st.error("الرجاء إدخال رقم قومي صحيح مكون من 14 رقماً.")
     else:
@@ -222,10 +251,13 @@ if choice == "تسجيل الحضور":
       name_col = (
           "Name" if "Name" in teachers_df.columns else teachers_df.columns[1]
       )
-      school_col = (
-          "School"
-          if "School" in teachers_df.columns
-          else teachers_df.columns[-1]
+      program_col = (
+          "Program"
+          if "Program" in teachers_df.columns
+          else teachers_df.columns[3]
+      )
+      code_col = (
+          "Code" if "Code" in teachers_df.columns else teachers_df.columns[0]
       )
 
       teacher = teachers_df[teachers_df[id_col].astype(str).str.strip() == nat_id]
@@ -237,35 +269,50 @@ if choice == "تسجيل الحضور":
         )
       else:
         name = teacher.iloc[0][name_col]
-        school = (
-            teacher.iloc[0][school_col]
-            if school_col in teacher.columns
-            else "غير متوفر"
+        program = (
+            teacher.iloc[0][program_col]
+            if program_col in teacher.columns
+            else "تطبيقات تربوية للمعلم المساعد"
+        )
+        t_code = (
+            teacher.iloc[0][code_col]
+            if code_col in teacher.columns
+            else "367966"
         )
 
         current_date = datetime.now().strftime("%Y-%m-%d")
-        current_time = datetime.now().strftime("%H:%M:%S")
+        current_time = datetime.now().strftime("%I:%M:%S %p")
 
+        # التحقق مما إذا تم تسجيل الحضور مسبقاً اليوم
         already_logged = log_df[
             (log_df["National_ID"].astype(str).str.strip() == nat_id)
             & (log_df["Date"] == current_date)
         ]
 
         if not already_logged.empty:
+          serial_no = already_logged.iloc[0].get("Code_ID", "A-001")
           st.info(f"المعلم/ـة **{name}** مسجل بالفعل لهذا اليوم.")
-          st.session_state["last_ticket"] = {
+          st.session_state["ticket_data"] = {
               "name": name,
+              "program": program,
               "id": nat_id,
-              "school": str(school),
-              "date": current_date,
-              "time": already_logged.iloc[0]["Time"],
+              "code": t_code,
+              "serial": serial_no,
+              "datetime": f"{current_date} | {already_logged.iloc[0]['Time']}",
           }
         else:
+          # توليد رقم أسبقية تسلسلي لليوم
+          today_logs = log_df[log_df["Date"] == current_date]
+          serial_num = len(today_logs) + 1
+          serial_str = f"A-{serial_num:03d}"
+
           new_entry = pd.DataFrame(
               [{
                   "National_ID": nat_id,
                   "Name": name,
-                  "School": str(school),
+                  "School": "فرع الجيزة",
+                  "Program": program,
+                  "Code_ID": serial_str,
                   "Date": current_date,
                   "Time": current_time,
                   "Status": "حاضر",
@@ -273,47 +320,70 @@ if choice == "تسجيل الحضور":
           )
           log_df = pd.concat([log_df, new_entry], ignore_index=True)
           log_df.to_csv(LOG_FILE, index=False, encoding="utf-8-sig")
+
           st.success(
-              f"تم تسجيل حضور المعلم/ـة: **{name}** بنجاح في تمام الساعة"
-              f" {current_time}"
+              f"تم تسجيل الحضور وإصدار التذكرة بنجاح برقم الأسبقية:"
+              f" **{serial_str}**"
           )
-          st.session_state["last_ticket"] = {
+          st.session_state["ticket_data"] = {
               "name": name,
+              "program": program,
               "id": nat_id,
-              "school": str(school),
-              "date": current_date,
-              "time": current_time,
+              "code": t_code,
+              "serial": serial_str,
+              "datetime": f"{current_date} | {current_time}",
           }
 
-  # عرض تذكرة الحضور إذا تم تسجيل أو البحث عن معلم بنجاح
-  if "last_ticket" in st.session_state:
-    t = st.session_state["last_ticket"]
+  # عرض التذكرة المطابقة للصورة المرفقة
+  if "ticket_data" in st.session_state:
+    t = st.session_state["ticket_data"]
     st.markdown("---")
-    st.subheader("🎫 معاينة تذكرة الحضور (جاهزة للطباعة 10×15 سم)")
 
     ticket_html = f"""
-        <div id="printable-ticket" class="ticket-box">
-            <div class="ticket-header">الأكاديمية المهنية للمعلمين</div>
-            <div class="ticket-subheader">فرع محافظة الجيزة</div>
+        <div id="printable-ticket" class="ticket-container">
+            <div class="t-header">الأكاديمية المهنية للمعلمين</div>
+            <div class="t-subheader">فرع الجيزة</div>
             <hr style="border: 0.5px solid #10233F;">
-            <div class="ticket-body">
-                <b>السيد/ـة:</b> {t['name']}<br>
-                <b>الرقم القومي:</b> {t['id']}<br>
-                <b>المدرسة/الجهة:</b> {t['school']}<br>
-                <b>التاريخ:</b> {t['date']}<br>
-                <b>وقت الحضور:</b> {t['time']}<br>
-                <b>الحالة:</b> <span style="color: green; font-weight: bold;">تم الحضور ✓</span>
+            
+            <div style="text-align: center; font-size: 12px; color: #555;">تذكرة أسبقية الحضور</div>
+            <div class="priority-box">
+                <div class="priority-num">[ {t['serial']} ]</div>
             </div>
-            <div class="ticket-footer">
-                مع تمنياتنا بالتوفيق والتميز الدائم
+            
+            <div class="t-details">
+                <b>الاسم:</b> {t['name']}<br>
+                <b>البرنامج:</b> {t['program']}<br>
+                <b>الرقم القومي:</b> {t['id']}<br>
+                <b>كود المعلم:</b> {t['code']}<br>
+                <b>الوقت والتاريخ:</b> {t['datetime']}
+            </div>
+            
+            <div class="warning-box">
+                <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
+                • يرجى تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
+                • صورة بطاقة الرقم القومي سارية.<br>
+                • إيصال الدفع إن وجد.
+            </div>
+            
+            <div class="t-footer">
+                أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
             </div>
         </div>
         """
     st.markdown(ticket_html, unsafe_allow_html=True)
 
-    col_p1, col_p2 = st.columns(2)
-    with col_p1:
-      if st.button("🖨️ طباعة التذكرة", type="primary"):
+    st.markdown("<br>", unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+      if st.button("إغلاق"):
+        if "ticket_data" in st.session_state:
+          del st.session_state["ticket_data"]
+        st.rerun()
+    with c2:
+      if st.button("عرض التذكرة بالكامل", type="secondary"):
+        st.info("التذكرة معروضة بالكامل بالأعلى وجاهزة للطباعة.")
+    with c3:
+      if st.button("طباعة التذكرة", type="primary"):
         st.markdown(
             """
                 <script>
@@ -331,6 +401,9 @@ elif choice == "إدارة المعلمين":
     with st.form("add_teacher_form"):
       new_id = st.text_input("الرقم القومي (14 رقم)", max_chars=14)
       new_name = st.text_input("الاسم الكامل")
+      new_prog = st.text_input(
+          "اسم البرنامج التدريبي", value="تطبيقات تربوية للمعلم المساعد"
+      )
       new_school = st.text_input("المدرسة / الجهة")
       new_admin = st.text_input("الإدارة التعليمية")
       new_phone = st.text_input("رقم الهاتف")
@@ -356,10 +429,10 @@ elif choice == "إدارة المعلمين":
         else:
           new_t_df = pd.DataFrame(
               [{
-                  "Code": str(len(teachers_df) + 1),
+                  "Code": str(int(teachers_df.shape[0]) + 367900),
                   "Name": new_name,
                   "National_ID": new_id,
-                  "Program": "عام",
+                  "Program": new_prog,
                   "School": new_school,
                   "Administration": new_admin,
                   "Phone": new_phone,
