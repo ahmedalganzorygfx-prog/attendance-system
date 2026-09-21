@@ -306,7 +306,7 @@ if choice == "إصدار التذاكر والحضور":
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة مع تكبير اللوجو وتوسيع المسافات داخل مقاس 10*15 سم
+  # عرض التذكرة بعد إزالة الجملة السفلية غير المطلوبة
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -365,7 +365,7 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # تحويل الشعار إلى Base64 بحجم أكبر وواضح للطباعة
+    # تحويل الشعار إلى Base64
     import base64
 
     logo_base64 = ""
@@ -380,7 +380,7 @@ if choice == "إصدار التذاكر والحضور":
         else '<div style="text-align: center; font-size: 28px;">🏛️</div>'
     )
 
-    # قالب HTML مستقل بتكبير اللوجو وتوسيع المسافات بملء الفريم بدقة
+    # قالب HTML مستقل تم تنظيفه تماماً وإزالة الجملة السفلية
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -397,7 +397,7 @@ if choice == "إصدار التذاكر والحضور":
             background: #ffffff;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -443,7 +443,7 @@ if choice == "إصدار التذاكر والحضور":
     </style>
 </head>
 <body>
-    <div class="ticket-box">
+    <div class="ticket-box" style="justify-content: center;">
         <div>
             {logo_img_tag}
             <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 19px; margin-top: 2px;">الأكاديمية المهنية للمعلمين</div>
@@ -474,10 +474,6 @@ if choice == "إصدار التذاكر والحضور":
             <div style="text-align: center; font-size: 12.5px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 7px; border-radius: 5px;">
                 أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
             </div>
-        </div>
-        
-        <div style="text-align: center; font-size: 10.5px; color: #555; padding-top: 4px; border-top: 1px dashed #ddd;">
-            نظام إصدار تذاكر أسبقية الحضور - فرع الجيزة
         </div>
     </div>
     
