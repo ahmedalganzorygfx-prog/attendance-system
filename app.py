@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع هوامش 1سم يمين ويسار فقط وتواقيع ملاصقة للجدول)
+# 3. صفحة سجل الحضور والتقارير (مع هوامش متوازنة ورفع التواقيع 0.5 سم للأعلى)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -547,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (بارتفاع 8.5mm لكل صف لتناسب التواقيع والصفحات بدقة تامة)
+    # توليد صفوف الجدول الرسمية (بارتفاع 8.2mm لكل صف لتناسب الهوامش المحسنة بدقة)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -559,7 +559,7 @@ elif choice == "سجل الحضور والتقارير":
         r_datetime = f"{r.get('Date', '')} | {r.get('Time', '')}"
         r_serial = r.get("Code_ID", f"A-{idx:03d}")
         rows_html += f"""
-                <tr style="height: 8.5mm;">
+                <tr style="height: 8.2mm;">
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;">{idx}</td>
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px; font-weight: bold;">{r_serial}</td>
                     <td style="border: 1px solid #444; padding: 0px 4px; text-align: right; font-size: 11px;">{r_name}</td>
@@ -572,7 +572,7 @@ elif choice == "سجل الحضور والتقارير":
                 """
       else:
         rows_html += f"""
-                <tr style="height: 8.5mm;">
+                <tr style="height: 8.2mm;">
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;">{idx}</td>
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;"></td>
                     <td style="border: 1px solid #444; padding: 0px 4px; text-align: right; font-size: 11px;"></td>
@@ -592,11 +592,11 @@ elif choice == "سجل الحضور والتقارير":
     <style>
         @page {{
             size: A4 landscape;
-            margin: 2mm 10mm;
+            margin: 5mm 10mm;
         }}
         html, body {{
             width: 277mm;
-            height: 206mm;
+            height: 200mm;
             margin: 0;
             padding: 0;
             font-family: 'Tahoma', 'Arial', sans-serif;
@@ -607,8 +607,8 @@ elif choice == "سجل الحضور والتقارير":
         }}
         .sheet {{
             width: 277mm;
-            height: 204mm;
-            margin: 2mm auto;
+            height: 198mm;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -645,7 +645,7 @@ elif choice == "سجل الحضور والتقارير":
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: 1px;
+            margin-top: -3mm;
             margin-bottom: 1px;
             font-size: 11px;
             font-weight: bold;
@@ -735,7 +735,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (هوامش يمين ويسار 1سم)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (هوامش متوازنة وتواقيع مرفوعة 0.5 سم)
         </button>
         """
     components.html(report_popup_btn, height=70)
