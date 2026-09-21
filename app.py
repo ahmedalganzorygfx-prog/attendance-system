@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع ضبط الهوامش 5mm ورفع التواقيع مباشرة أسفل الصف 19)
+# 3. صفحة سجل الحضور والتقارير (مع هوامش 1سم يمين ويسار فقط وتواقيع ملاصقة للجدول)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -547,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (بارتفاع 8.5mm لكل صف لتناسب الهوامش الجديدة والتواقيع تماماً)
+    # توليد صفوف الجدول الرسمية (بارتفاع 8.5mm لكل صف لتناسب التواقيع والصفحات بدقة تامة)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -592,11 +592,11 @@ elif choice == "سجل الحضور والتقارير":
     <style>
         @page {{
             size: A4 landscape;
-            margin: 5mm;
+            margin: 2mm 10mm;
         }}
         html, body {{
-            width: 287mm;
-            height: 200mm;
+            width: 277mm;
+            height: 206mm;
             margin: 0;
             padding: 0;
             font-family: 'Tahoma', 'Arial', sans-serif;
@@ -606,9 +606,9 @@ elif choice == "سجل الحضور والتقارير":
             overflow: hidden;
         }}
         .sheet {{
-            width: 287mm;
-            height: 200mm;
-            margin: 0 auto;
+            width: 277mm;
+            height: 204mm;
+            margin: 2mm auto;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -735,7 +735,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (هوامش 5مم وتواقيع ملاصقة للجدول)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (هوامش يمين ويسار 1سم)
         </button>
         """
     components.html(report_popup_btn, height=70)
