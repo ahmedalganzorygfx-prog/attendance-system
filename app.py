@@ -46,7 +46,7 @@ def init_files():
             "Name",
             "National_ID",
             "Program",
-            "School",
+            "Branch",
             "Administration",
             "Phone",
             "Job_Title",
@@ -59,7 +59,7 @@ def init_files():
         columns=[
             "National_ID",
             "Name",
-            "School",
+            "Branch",
             "Program",
             "Code_ID",
             "Date",
@@ -119,7 +119,7 @@ def load_data():
             "Name",
             "National_ID",
             "Program",
-            "School",
+            "Branch",
             "Administration",
             "Phone",
             "Job_Title",
@@ -127,6 +127,8 @@ def load_data():
     )
 
   teachers_df.columns = [c.strip() for c in teachers_df.columns]
+  if "School" in teachers_df.columns and "Branch" not in teachers_df.columns:
+    teachers_df.rename(columns={"School": "Branch"}, inplace=True)
 
   log_df = None
   for enc in ["utf-8-sig", "utf-8", "cp1256", "iso-8859-6", "latin1"]:
@@ -143,7 +145,7 @@ def load_data():
   expected_log_cols = [
       "National_ID",
       "Name",
-      "School",
+      "Branch",
       "Program",
       "Code_ID",
       "Date",
@@ -155,6 +157,9 @@ def load_data():
     log_df.to_csv(LOG_FILE, index=False, encoding="utf-8-sig")
 
   log_df.columns = [c.strip() for c in log_df.columns]
+  if "School" in log_df.columns and "Branch" not in log_df.columns:
+    log_df.rename(columns={"School": "Branch"}, inplace=True)
+
   for col in expected_log_cols:
     if col not in log_df.columns:
       log_df[col] = ""
@@ -294,7 +299,7 @@ if choice == "إصدار التذاكر والحضور":
             [{
                 "National_ID": ft["id"],
                 "Name": ft["name"],
-                "School": "فرع الجيزة",
+                "Branch": "فرع الجيزة",
                 "Program": ft["program"],
                 "Code_ID": serial_str,
                 "Date": current_date,
@@ -479,7 +484,7 @@ elif choice == "إدارة المعلمين":
       new_prog = st.text_input(
           "اسم البرنامج التدريبي", value="تطبيقات تربوية للمعلم المساعد"
       )
-      new_school = st.text_input("المدرسة / الجهة")
+      new_branch = st.text_input("الفرع / الجهة", value="فرع الجيزة")
       new_admin = st.text_input("الإدارة التعليمية")
       new_phone = st.text_input("رقم الهاتف")
       new_job = st.text_input("الوظيفة")
@@ -508,7 +513,7 @@ elif choice == "إدارة المعلمين":
                   "Name": new_name,
                   "National_ID": new_id,
                   "Program": new_prog,
-                  "School": new_school,
+                  "Branch": new_branch,
                   "Administration": new_admin,
                   "Phone": new_phone,
                   "Job_Title": new_job,
@@ -520,7 +525,7 @@ elif choice == "إدارة المعلمين":
           st.rerun()
 
   st.subheader("قائمة المعلمين المسجلين:")
-  st.dataframe(teachers_df, use_container_width=True)
+  st.dataframe(teachers_df, use_container_width=True, hide_index=True)
 
 # 3. صفحة سجل الحضور والتقارير
 elif choice == "سجل الحضور والتقارير":
@@ -542,11 +547,10 @@ elif choice == "سجل الحضور والتقارير":
         label="إجمالي الحضور في هذا التاريخ", value=len(filtered_log)
     )
 
-    # إضافة وترقيم عمود "م" ليبدأ من 1 بدلاً من 0 في جدول العرض الرئيسي
     if not filtered_log.empty:
       filtered_log.insert(0, "م", range(1, len(filtered_log) + 1))
 
-    st.dataframe(filtered_log, use_container_width=True)
+    st.dataframe(filtered_log, use_container_width=True, hide_index=True)
 
     csv_data = filtered_log.to_csv(index=False).encode("utf-8-sig")
     st.download_button(
@@ -562,7 +566,6 @@ elif choice == "سجل الحضور والتقارير":
         unsafe_allow_html=True,
     )
 
-    # توليد صفوف الجدول الرسمية (تسمية العمود "م" والترقيم يبدأ من 1)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
