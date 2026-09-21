@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع هوامش متوازنة ورفع التواقيع 0.5 سم للأعلى)
+# 3. صفحة سجل الحضور والتقارير (مع رفع التواقيع في المساحة البيضاء السفلية بمقدار 0.5 سم)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -547,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (بارتفاع 8.2mm لكل صف لتناسب الهوامش المحسنة بدقة)
+    # توليد صفوف الجدول الرسمية (بارتفاع 8.2mm لكل صف لضمان احتواء الـ 19 صفاً بدقة تامة)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -645,8 +645,8 @@ elif choice == "سجل الحضور والتقارير":
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: -3mm;
-            margin-bottom: 1px;
+            margin-top: -8mm;
+            margin-bottom: 2px;
             font-size: 11px;
             font-weight: bold;
             text-align: center;
@@ -735,7 +735,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (هوامش متوازنة وتواقيع مرفوعة 0.5 سم)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تنسيق نهائي متوازن ومضبوط)
         </button>
         """
     components.html(report_popup_btn, height=70)
