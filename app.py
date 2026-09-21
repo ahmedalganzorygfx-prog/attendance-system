@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع ضبط ارتفاع الصفوف هندسياً لاحتواء الـ 19 صفاً والتواقيع في صفحة A4 واحدة نهائية بدقة)
+# 3. صفحة سجل الحضور والتقارير (مع ضبط ارتفاع الصفوف ورفع التواقيع لتندمج في صفحة A4 واحدة تامة)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -547,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (بارتفاع 9.8mm لكل صف لضمان احتواء الـ 19 صفاً والتواقيع تماماً في صفحة واحدة)
+    # توليد صفوف الجدول الرسمية (بارتفاع 8.8mm لكل صف لضمان احتواء الـ 19 صفاً مع التواقيع تماماً في صفحة واحدة)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -559,7 +559,7 @@ elif choice == "سجل الحضور والتقارير":
         r_datetime = f"{r.get('Date', '')} | {r.get('Time', '')}"
         r_serial = r.get("Code_ID", f"A-{idx:03d}")
         rows_html += f"""
-                <tr style="height: 9.8mm;">
+                <tr style="height: 8.8mm;">
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;">{idx}</td>
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px; font-weight: bold;">{r_serial}</td>
                     <td style="border: 1px solid #444; padding: 0px 4px; text-align: right; font-size: 11px;">{r_name}</td>
@@ -572,7 +572,7 @@ elif choice == "سجل الحضور والتقارير":
                 """
       else:
         rows_html += f"""
-                <tr style="height: 9.8mm;">
+                <tr style="height: 8.8mm;">
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;">{idx}</td>
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center; font-size: 11px;"></td>
                     <td style="border: 1px solid #444; padding: 0px 4px; text-align: right; font-size: 11px;"></td>
@@ -606,9 +606,9 @@ elif choice == "سجل الحضور والتقارير":
             overflow: hidden;
         }}
         .sheet {{
-            width: 291mm;
-            height: 204mm;
-            margin: 3mm auto;
+            width: 293mm;
+            height: 206mm;
+            margin: 2mm auto;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -624,7 +624,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         .title {{
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: #0b2246;
             margin-bottom: 2px;
@@ -645,7 +645,7 @@ elif choice == "سجل الحضور والتقارير":
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: 2px;
+            margin-top: 1px;
             margin-bottom: 1px;
             font-size: 11px;
             font-weight: bold;
@@ -674,7 +674,7 @@ elif choice == "سجل الحضور والتقارير":
         @media print {{
             .print-btn {{ display: none; }}
             body {{ background: white; margin: 0; }}
-            .sheet {{ width: 100%; height: 100vh; margin: 0; padding: 3mm; }}
+            .sheet {{ width: 100%; height: 100vh; margin: 0; padding: 2mm; }}
         }}
     </style>
 </head>
@@ -735,7 +735,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (مضمن في ورقة A4 واحدة بدقة تامة)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تجميع نهائي في ورقة A4 واحدة)
         </button>
         """
     components.html(report_popup_btn, height=70)
