@@ -172,7 +172,10 @@ teachers_df, log_df = load_data()
 # 1. صفحة إصدار التذاكر والحضور
 if choice == "إصدار التذاكر والحضور":
 
-  st.markdown("### البحث عن المعلم (فرع الجيزة)")
+  st.markdown(
+      "<h3 style='text-align: center;'>البحث عن المعلم (فرع الجيزة)</h3>",
+      unsafe_allow_html=True,
+  )
   col_search1, col_search2 = st.columns([3, 1])
   with col_search1:
     search_input = st.text_input(
@@ -211,7 +214,10 @@ if choice == "إصدار التذاكر والحضور":
             " بإضافته من قائمة 'إدارة المعلمين'."
         )
 
-  st.markdown("### بيانات المعلم المسجل")
+  st.markdown(
+      "<h3 style='text-align: center;'>بيانات المعلم المسجل</h3>",
+      unsafe_allow_html=True,
+  )
   with st.container():
     if found_teacher is not None:
       t_code = (
@@ -235,10 +241,26 @@ if choice == "إصدار التذاكر والحضور":
           else "تطبيقات تربوية للمعلم المساعد"
       )
 
-      st.markdown(f"**كود المعلم:** {t_code}")
-      st.markdown(f"**الاسم:** {t_name}")
-      st.markdown(f"**الرقم القومي:** {t_id}")
-      st.markdown(f"**البرنامج:** {t_prog}")
+      st.markdown(
+          f"<div style='direction: rtl; text-align: right;'><b>كود"
+          f" المعلم:</b> {t_code}</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          f"<div style='direction: rtl; text-align: right;'><b>الاسم:</b>"
+          f" {t_name}</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          f"<div style='direction: rtl; text-align: right;'><b>الرقم"
+          f" القومي:</b> {t_id}</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          f"<div style='direction: rtl; text-align: right;'><b>البرنامج:</b>"
+          f" {t_prog}</div>",
+          unsafe_allow_html=True,
+      )
 
       st.session_state["current_selected_teacher"] = {
           "code": t_code,
@@ -247,10 +269,23 @@ if choice == "إصدار التذاكر والحضور":
           "program": t_prog,
       }
     else:
-      st.markdown("كود المعلم: ---")
-      st.markdown("الاسم: ---")
-      st.markdown("الرقم القومي: ---")
-      st.markdown("البرنامج: ---")
+      st.markdown(
+          "<div style='direction: rtl; text-align: right;'>كود المعلم: ---</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<div style='direction: rtl; text-align: right;'>الاسم: ---</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<div style='direction: rtl; text-align:"
+          " right;'>الرقم القومي: ---</div>",
+          unsafe_allow_html=True,
+      )
+      st.markdown(
+          "<div style='direction: rtl; text-align: right;'>البرنامج: ---</div>",
+          unsafe_allow_html=True,
+      )
 
   st.markdown("---")
 
@@ -474,7 +509,10 @@ if choice == "إصدار التذاكر والحضور":
 
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
-  st.header("👥 قاعدة بيانات المعلمين")
+  st.markdown(
+      "<h2 style='text-align: center;'>👥 قاعدة بيانات المعلمين</h2>",
+      unsafe_allow_html=True,
+  )
 
   with st.expander("➕ إضافة معلم جديد"):
     with st.form("add_teacher_form"):
@@ -524,7 +562,10 @@ elif choice == "إدارة المعلمين":
           st.success(f"تمت إضافة المعلم {new_name} بنجاح!")
           st.rerun()
 
-  st.subheader("قائمة المعلمين المسجلين:")
+  st.markdown(
+      "<h3 style='text-align: center;'>قائمة المعلمين المسجلين</h3>",
+      unsafe_allow_html=True,
+  )
   st.dataframe(teachers_df, use_container_width=True, hide_index=True)
 
 # 3. صفحة سجل الحضور والتقارير
