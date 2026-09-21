@@ -28,20 +28,26 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
-        background-color: #ffffff;
+        background-color: #ffffff !important;
+    }
+    .stSidebar div, .stSidebar span, .stSidebar label {
+        color: #111111 !important;
     }
     p, span, label, div, h3, h4 {
         color: #111111;
     }
-    /* إصلاح ألوان القوائم المنسدلة في متصفح Edge */
+    /* إصلاح شامل لألوان القوائم المنسدلة في متصفح Edge و Chrome */
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
+        color: #111111 !important;
+    }
+    div[data-baseweb="select"] * {
         color: #111111 !important;
     }
     ul[data-baseweb="menu"] {
         background-color: #ffffff !important;
     }
-    ul[data-baseweb="menu"] div {
+    ul[data-baseweb="menu"] div, ul[data-baseweb="menu"] span {
         color: #111111 !important;
     }
     </style>
