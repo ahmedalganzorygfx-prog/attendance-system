@@ -15,7 +15,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# تنسيقات الواجهة العامة وتثبيت الألوان لمنع اختفاء النصوص في متصفح Edge
+# تنسيقات الواجهة العامة وتثبيت الألوان ومنع تأثير الوضع الداكن للمتصفحات
 st.markdown(
     """
     <style>
@@ -28,9 +28,21 @@ st.markdown(
     .stSidebar {
         direction: rtl;
         text-align: right;
+        background-color: #ffffff;
     }
     p, span, label, div, h3, h4 {
         color: #111111;
+    }
+    /* إصلاح ألوان القوائم المنسدلة في متصفح Edge */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #111111 !important;
+    }
+    ul[data-baseweb="menu"] {
+        background-color: #ffffff !important;
+    }
+    ul[data-baseweb="menu"] div {
+        color: #111111 !important;
     }
     </style>
     """,
