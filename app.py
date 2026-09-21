@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع فصل التواقيع ورفعها تماماً أسفل الصف 19)
+# 3. صفحة سجل الحضور والتقارير (مع فصل التواقيع وترويسة الفوتر في أقصى الأسفل)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -645,7 +645,7 @@ elif choice == "سجل الحضور والتقارير":
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: -30mm;
+            margin-top: -14mm;
             margin-bottom: 2px;
             font-size: 11px;
             font-weight: bold;
@@ -735,7 +735,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (رفع التواقيع وحدها للأعلى)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تنسيق نهائي متوازن)
         </button>
         """
     components.html(report_popup_btn, height=70)
