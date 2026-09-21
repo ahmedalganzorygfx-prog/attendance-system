@@ -72,6 +72,12 @@ def init_files():
 
 init_files()
 
+# وضع اللوجو في المنتصف أعلى العنوان الرئيسي
+if os.path.exists("Logo.png"):
+  col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+  with col_l2:
+    st.image("Logo.png", use_container_width=True)
+
 # العنوان العلوي مطابق لبرنامج الجهاز
 st.markdown(
     "<h3 style='text-align: center; color: #10233F;'>الأكاديمية المهنية للمعلمين"
@@ -516,7 +522,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (بدون شعار في كشف الحضور الرسمي)
+# 3. صفحة سجل الحضور والتقارير
 elif choice == "سجل الحضور والتقارير":
   st.markdown(
       "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
@@ -530,11 +536,16 @@ elif choice == "سجل الحضور والتقارير":
     with col1:
       filter_date = st.date_input("تصفية حسب التاريخ", datetime.now())
 
-    filtered_log = log_df[log_df["Date"] == str(filter_date)]
+    filtered_log = log_df[log_df["Date"] == str(filter_date)].copy()
 
     st.metric(
         label="إجمالي الحضور في هذا التاريخ", value=len(filtered_log)
     )
+
+    # إضافة وترقيم عمود "م" ليبدأ من 1 بدلاً من 0 في جدول العرض الرئيسي
+    if not filtered_log.empty:
+      filtered_log.insert(0, "م", range(1, len(filtered_log) + 1))
+
     st.dataframe(filtered_log, use_container_width=True)
 
     csv_data = filtered_log.to_csv(index=False).encode("utf-8-sig")
