@@ -15,18 +15,22 @@ st.set_page_config(
     layout="centered",
 )
 
-# تنسيقات الواجهة العامة
+# تنسيقات الواجهة العامة وتثبيت الألوان لمنع اختفاء النصوص في متصفح Edge
 st.markdown(
     """
     <style>
     .stApp {
         direction: rtl;
         text-align: right;
-        background-color: #f8f9fa;
+        background-color: #f8f9fa !important;
+        color: #111111 !important;
     }
     .stSidebar {
         direction: rtl;
         text-align: right;
+    }
+    p, span, label, div, h3, h4 {
+        color: #111111;
     }
     </style>
     """,
@@ -173,7 +177,8 @@ teachers_df, log_df = load_data()
 if choice == "إصدار التذاكر والحضور":
 
   st.markdown(
-      "<h3 style='text-align: center;'>البحث عن المعلم (فرع الجيزة)</h3>",
+      "<h3 style='text-align: center; color: #111111;'>البحث عن المعلم (فرع"
+      " الجيزة)</h3>",
       unsafe_allow_html=True,
   )
   col_search1, col_search2 = st.columns([3, 1])
@@ -215,7 +220,7 @@ if choice == "إصدار التذاكر والحضور":
         )
 
   st.markdown(
-      "<h3 style='text-align: center;'>بيانات المعلم المسجل</h3>",
+      "<h3 style='text-align: center; color: #111111;'>بيانات المعلم المسجل</h3>",
       unsafe_allow_html=True,
   )
   with st.container():
@@ -242,23 +247,23 @@ if choice == "إصدار التذاكر والحضور":
       )
 
       st.markdown(
-          f"<div style='direction: rtl; text-align: right;'><b>كود"
-          f" المعلم:</b> {t_code}</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          f" #111111;'><b>كود المعلم:</b> {t_code}</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          f"<div style='direction: rtl; text-align: right;'><b>الاسم:</b>"
-          f" {t_name}</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          f" #111111;'><b>الاسم:</b> {t_name}</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          f"<div style='direction: rtl; text-align: right;'><b>الرقم"
-          f" القومي:</b> {t_id}</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          f" #111111;'><b>الرقم القومي:</b> {t_id}</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          f"<div style='direction: rtl; text-align: right;'><b>البرنامج:</b>"
-          f" {t_prog}</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          f" #111111;'><b>البرنامج:</b> {t_prog}</div>",
           unsafe_allow_html=True,
       )
 
@@ -270,20 +275,23 @@ if choice == "إصدار التذاكر والحضور":
       }
     else:
       st.markdown(
-          "<div style='direction: rtl; text-align: right;'>كود المعلم: ---</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          " #111111;'>كود المعلم: ---</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          "<div style='direction: rtl; text-align: right;'>الاسم: ---</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          " #111111;'>الاسم: ---</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          "<div style='direction: rtl; text-align:"
-          " right;'>الرقم القومي: ---</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          " #111111;'>الرقم القومي: ---</div>",
           unsafe_allow_html=True,
       )
       st.markdown(
-          "<div style='direction: rtl; text-align: right;'>البرنامج: ---</div>",
+          "<div style='direction: rtl; text-align: right; color:"
+          " #111111;'>البرنامج: ---</div>",
           unsafe_allow_html=True,
       )
 
@@ -510,7 +518,8 @@ if choice == "إصدار التذاكر والحضور":
 # 2. صفحة إدارة المعلمين
 elif choice == "إدارة المعلمين":
   st.markdown(
-      "<h2 style='text-align: center;'>👥 قاعدة بيانات المعلمين</h2>",
+      "<h2 style='text-align: center; color: #111111;'>👥 قاعدة بيانات"
+      " المعلمين</h2>",
       unsafe_allow_html=True,
   )
 
@@ -563,7 +572,8 @@ elif choice == "إدارة المعلمين":
           st.rerun()
 
   st.markdown(
-      "<h3 style='text-align: center;'>قائمة المعلمين المسجلين</h3>",
+      "<h3 style='text-align: center; color: #111111;'>قائمة المعلمين"
+      " المسجلين</h3>",
       unsafe_allow_html=True,
   )
   st.dataframe(teachers_df, use_container_width=True, hide_index=True)
@@ -571,7 +581,8 @@ elif choice == "إدارة المعلمين":
 # 3. صفحة سجل الحضور والتقارير
 elif choice == "سجل الحضور والتقارير":
   st.markdown(
-      "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
+      "<h2 style='text-align: center; color: #111111;'>📋 سجل الحضور والتقارير"
+      " اليومية</h2>",
       unsafe_allow_html=True,
   )
 
@@ -603,7 +614,8 @@ elif choice == "سجل الحضور والتقارير":
 
     st.markdown("---")
     st.markdown(
-        "<h3 style='text-align: center;'>🖨️ طباعة كشف إثبات الحضور الرسمي</h3>",
+        "<h3 style='text-align: center; color: #111111;'>🖨️ طباعة كشف إثبات"
+        " الحضور الرسمي</h3>",
         unsafe_allow_html=True,
     )
 
