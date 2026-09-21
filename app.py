@@ -1,4 +1,5 @@
 import os
+import base64
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pandas as pd
@@ -250,7 +251,6 @@ if choice == "إصدار التذاكر والحضور":
     if "current_selected_teacher" in st.session_state:
       ft = st.session_state["current_selected_teacher"]
 
-      # ضبط الوقت والتاريخ حسب توقيت مصر المحلي (القاهرة) بدقة تامة
       cairo_tz = ZoneInfo("Africa/Cairo")
       current_date = datetime.now(cairo_tz).strftime("%Y-%m-%d")
       current_time = datetime.now(cairo_tz).strftime("%I:%M:%S %p")
@@ -373,8 +373,6 @@ if choice == "إصدار التذاكر والحضور":
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    import base64
 
     logo_base64 = ""
     if os.path.exists("Logo.png"):
@@ -518,7 +516,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع توسيط العناوين وتحديث نص الزر بدقة)
+# 3. صفحة سجل الحضور والتقارير (مع إدراج اللوجو وعمود "م" المرقم تلقائياً)
 elif choice == "سجل الحضور والتقارير":
   st.markdown(
       "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
@@ -553,7 +551,7 @@ elif choice == "سجل الحضور والتقارير":
         unsafe_allow_html=True,
     )
 
-    # توليد صفوف الجدول الرسمية (بارتفاع 8.2mm لكل صف لضمان احتواء الـ 19 صفاً بدقة تامة)
+    # توليد صفوف الجدول الرسمية (تسمية العمود "م" والترقيم يبدأ من 1)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -589,6 +587,18 @@ elif choice == "سجل الحضور والتقارير":
                     <td style="border: 1px solid #444; padding: 0px 2px; text-align: center;"></td>
                 </tr>
                 """
+
+    report_logo_base64 = ""
+    if os.path.exists("Logo.png"):
+      with open("Logo.png", "rb") as f:
+        report_logo_base64 = base64.b64encode(f.read()).decode("utf-8")
+
+    report_logo_tag = (
+        f'<img src="data:image/png;base64,{report_logo_base64}"'
+        ' style="height: 45px; display: block; margin: 0 auto 2px auto;" />'
+        if report_logo_base64
+        else ""
+    )
 
     official_report_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -628,12 +638,14 @@ elif choice == "سجل الحضور والتقارير":
             font-weight: bold;
             margin-bottom: 1px;
         }}
-        .title {{
+        .title-container {{
             text-align: center;
+            margin-bottom: 2px;
+        }}
+        .title {{
             font-size: 13px;
             font-weight: bold;
             color: #0b2246;
-            margin-bottom: 2px;
         }}
         table {{
             width: 100%;
@@ -699,7 +711,10 @@ elif choice == "سجل الحضور والتقارير":
                 <div>الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
             </div>
             
-            <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
+            <div class="title-container">
+                {report_logo_tag}
+                <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
+            </div>
             
             <table>
                 <thead>
