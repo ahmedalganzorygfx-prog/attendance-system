@@ -276,6 +276,15 @@ if choice == "إصدار التذاكر والحضور":
         serial_num = len(today_logs) + 1
         serial_str = f"A-{serial_num:03d}"
 
+        # البحث عن كود المعلم الحقيقي من قاعدة بيانات المعلمين إن وجد
+        t_real_code = ft["code"]
+        match_t = teachers_df[
+            teachers_df["National_ID"].astype(str).str.strip()
+            == str(ft["id"])
+        ]
+        if not match_t.empty and "Code" in match_t.columns:
+          t_real_code = str(match_t.iloc[0]["Code"])
+
         new_entry = pd.DataFrame(
             [{
                 "National_ID": ft["id"],
@@ -286,6 +295,7 @@ if choice == "إصدار التذاكر والحضور":
                 "Date": current_date,
                 "Time": current_time,
                 "Status": "حاضر",
+                "Teacher_Code": t_real_code,
             }]
         )
         log_df = pd.concat([log_df, new_entry], ignore_index=True)
@@ -299,14 +309,14 @@ if choice == "إصدار التذاكر والحضور":
             "name": ft["name"],
             "program": ft["program"],
             "id": ft["id"],
-            "code": ft["code"],
+            "code": t_real_code,
             "serial": serial_str,
             "datetime": f"{current_date} | {current_time}",
         }
     else:
       st.warning("الرجاء البحث عن المعلم أولاً قبل تأكيد الحضور.")
 
-  # عرض التذكرة بعد إزالة الجملة السفلية غير المطلوبة
+  # عرض التذكرة
   if "show_ticket_modal" in st.session_state:
     tk = st.session_state["show_ticket_modal"]
     st.markdown("---")
@@ -365,7 +375,6 @@ if choice == "إصدار التذاكر والحضور":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # تحويل الشعار إلى Base64
     import base64
 
     logo_base64 = ""
@@ -380,7 +389,6 @@ if choice == "إصدار التذاكر والحضور":
         else '<div style="text-align: center; font-size: 28px;">🏛️</div>'
     )
 
-    # قالب HTML مستقل تم تنظيفه تماماً وإزالة الجملة السفلية
     standalone_ticket_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -388,74 +396,25 @@ if choice == "إصدار التذاكر والحضور":
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>تذكرة الحضور - {tk['serial']}</title>
     <style>
-        @page {{
-            size: 10cm 15cm;
-            margin: 0;
-        }}
-        body {{
-            font-family: 'Tahoma', 'Arial', sans-serif;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }}
-        .ticket-box {{
-            width: 10cm;
-            height: 15cm;
-            padding: 7mm 9mm;
-            box-sizing: border-box;
-            border: 2.5px solid #10233F;
-            background-color: #ffffff;
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }}
-        .actions {{
-            position: fixed;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-        }}
-        .btn {{
-            background-color: #ff4b4b;
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }}
-        @media print {{
-            .actions {{ display: none; }}
-            body {{ background: white; }}
-            .ticket-box {{ border: none; width: 10cm; height: 15cm; padding: 6mm 8mm; }}
-        }}
+        @page {{ size: 10cm 15cm; margin: 0; }}
+        body {{ font-family: 'Tahoma', 'Arial', sans-serif; background: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 0; }}
+        .ticket-box {{ width: 10cm; height: 15cm; padding: 7mm 9mm; box-sizing: border-box; border: 2.5px solid #10233F; background-color: #ffffff; text-align: right; display: flex; flex-direction: column; justify-content: space-between; }}
+        .actions {{ position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; }}
+        .btn {{ background-color: #ff4b4b; color: white; padding: 10px 25px; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }}
+        @media print {{ .actions {{ display: none; }} body {{ background: white; margin: 0; }} .ticket-box {{ border: 2.5px solid #10233F; width: 10cm; height: 15cm; padding: 6mm 8mm; box-shadow: none; }} }}
     </style>
 </head>
 <body>
-    <div class="ticket-box" style="justify-content: center;">
+    <div class="ticket-box">
         <div>
             {logo_img_tag}
             <div style="text-align: center; color: #10233F; font-weight: bold; font-size: 19px; margin-top: 2px;">الأكاديمية المهنية للمعلمين</div>
             <div style="text-align: center; color: #555; font-size: 14px; margin-bottom: 5px;">فرع الجيزة</div>
             <hr style="border: 1px solid #10233F; margin: 6px 0;">
-            
             <div style="text-align: center; font-size: 12px; color: #666; margin-bottom: 3px;">تذكرة أسبقية الحضور</div>
-            
             <div style="text-align: center; background-color: #fdf8e2; border: 1.5px dashed #C9A227; padding: 7px; border-radius: 6px; margin: 6px 0;">
                 <span style="font-size: 26px; font-weight: bold; color: #d9534f;">[ {tk['serial']} ]</span>
             </div>
-            
             <div style="font-size: 13.5px; line-height: 2.2; color: #111; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 6px 0; margin-bottom: 8px;">
                 <b>الاسم:</b> {tk['name']}<br>
                 <b>البرنامج:</b> {tk['program']}<br>
@@ -463,20 +422,17 @@ if choice == "إصدار التذاكر والحضور":
                 <b>كود المعلم:</b> {tk['code']}<br>
                 <b>الوقت والتاريخ:</b> {tk['datetime']}
             </div>
-            
             <div style="border: 1px solid #e0a800; background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; font-size: 11px; line-height: 1.6; margin-bottom: 8px;">
                 <b>⚠️ تنبيه هام ومستندات مطلوبة:</b><br>
                 • تجهيز صحيفة أحوال إلكترونية حديثة معتمدة.<br>
                 • صورة بطاقة الرقم القومي سارية.<br>
                 • إيصال الدفع إن وجد.
             </div>
-
             <div style="text-align: center; font-size: 12.5px; color: #10233F; font-weight: bold; background-color: #eef2f7; padding: 7px; border-radius: 5px;">
                 أهلاً بكم في فرع الجيزة - يرجى الانتظار لحين استدعائكم
             </div>
         </div>
     </div>
-    
     <div class="actions">
         <button class="btn" onclick="window.print()">🖨️ طباعة التذكرة</button>
     </div>
@@ -563,7 +519,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير
+# 3. صفحة سجل الحضور والتقارير (مع كشف الحضور الرسمي المطابق للصورة تماماً)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -588,3 +544,119 @@ elif choice == "سجل الحضور والتقارير":
         file_name=f"attendance_giza_{filter_date}.csv",
         mime="text/css",
     )
+
+    st.markdown("---")
+    st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
+
+    # توليد صفوف الجدول الرسمية (مطابقة للصورة تماماً حتى 19 صفاً)
+    rows_html = ""
+    for idx in range(1, 20):
+      if idx <= len(filtered_log):
+        r = filtered_log.iloc[idx - 1]
+        r_name = r.get("Name", "")
+        r_code = r.get("Teacher_Code", r.get("Code_ID", ""))
+        r_id = r.get("National_ID", "")
+        r_prog = r.get("Program", "")
+        r_datetime = f"{r.get('Date', '')} | {r.get('Time', '')}"
+        r_serial = r.get("Code_ID", f"A-{idx:03d}")
+        rows_html += f"""
+                <tr>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{idx}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px; font-weight: bold;">{r_serial}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;">{r_name}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{r_code}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{r_id}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;">{r_prog}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 11px;">{r_datetime}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center;"></td>
+                </tr>
+                """
+      else:
+        rows_html += f"""
+                <tr>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{idx}</td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
+                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center;"></td>
+                </tr>
+                """
+
+    official_report_html = f"""<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>كشف إثبات حضور المعلمين - {filter_date}</title>
+    <style>
+        body {{ font-family: 'Tahoma', 'Arial', sans-serif; background: #fff; margin: 0; padding: 20px; color: #000; }}
+        .sheet {{ width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; }}
+        .header-top {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: bold; }}
+        .title {{ text-align: center; font-size: 18px; font-weight: bold; color: #0b2246; margin-bottom: 15px; }}
+        table {{ width: 100%; border-collapse: collapse; margin-bottom: 30px; }}
+        th {{ background-color: #0b2246; color: white; border: 1px solid #0b2246; padding: 8px 4px; font-size: 12px; text-align: center; }}
+        .signatures {{ display: flex; justify-content: space-between; margin-top: 40px; font-size: 13px; font-weight: bold; text-align: center; }}
+        .footer {{ display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; border-top: 1px solid #ccc; padding-top: 5px; }}
+        .print-btn {{ display: block; width: 200px; margin: 20px auto; background: #0b2246; color: white; border: none; padding: 10px; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; }}
+        @media print {{ .print-btn {{ display: none; }} body {{ padding: 0; }} }}
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="header-top">
+            <div>التاريخ: {filter_date}</div>
+            <div>الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+        </div>
+        
+        <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">م</th>
+                    <th style="width: 10%;">الترتيب</th>
+                    <th style="width: 20%;">الاسم</th>
+                    <th style="width: 11%;">كود المعلم</th>
+                    <th style="width: 16%;">الرقم القومي</th>
+                    <th style="width: 18%;">البرنامج</th>
+                    <th style="width: 12%;">وقت وتاريخ الوصول</th>
+                    <th style="width: 8%;">التوقيع</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+        
+        <div class="signatures">
+            <div>المختص<br><br>........................</div>
+            <div>مسئول المعمل<br><br>........................</div>
+            <div>مدير إدارة الفرع<br><br>........................</div>
+        </div>
+        
+        <div class="footer">
+            <div>الأكاديمية المهنية للمعلمين - فرع الجيزة | كشف حضور اليوم</div>
+            <div>صفحة 1 من 1</div>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()">🖨️ طباعة الكشف الرسمي</button>
+    </div>
+</body>
+</html>"""
+
+    report_popup_btn = f"""
+        <script>
+        function openReportWindow() {{
+            var htmlContent = {repr(official_report_html)};
+            var win = window.open('', '_blank', 'width=950,height=800,scrollbars=yes');
+            win.document.write(htmlContent);
+            win.document.close();
+        }}
+        </script>
+        <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (مطابق للصورة)
+        </button>
+        """
+    components.html(report_popup_btn, height=70)
