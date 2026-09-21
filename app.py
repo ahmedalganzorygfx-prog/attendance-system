@@ -518,9 +518,12 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع إنزال الترويسة والفوتر لأسفل الصفحة وتثبيت التواقيع تحت الصف 19 مباشرة)
+# 3. صفحة سجل الحضور والتقارير (مع توسيط العناوين في الواجهة وأزرار الطباعة)
 elif choice == "سجل الحضور والتقارير":
-  st.header("📋 سجل الحضور والتقارير اليومية")
+  st.markdown(
+      "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
+      unsafe_allow_html=True,
+  )
 
   if log_df.empty or log_df["National_ID"].dropna().empty:
     st.info("لا توجد سجلات حضور حتى الآن.")
@@ -545,7 +548,10 @@ elif choice == "سجل الحضور والتقارير":
     )
 
     st.markdown("---")
-    st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
+    st.markdown(
+        "<h3 style='text-align: center;'>🖨️ طباعة كشف إثبات الحضور الرسمي</h3>",
+        unsafe_allow_html=True,
+    )
 
     # توليد صفوف الجدول الرسمية (بارتفاع 8.2mm لكل صف لضمان احتواء الـ 19 صفاً بدقة تامة)
     rows_html = ""
@@ -740,7 +746,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (توقيعات تحت الصف 19 وترويسة أسفل الصفحة)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تويعات تحت الصف 19 وترويسة في أسفل الصفحة)
         </button>
         """
     components.html(report_popup_btn, height=70)
