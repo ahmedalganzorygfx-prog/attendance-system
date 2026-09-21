@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع رفع خط التوقيعات وتثبيت الفوتر بالأسفل)
+# 3. صفحة سجل الحضور والتقارير (مع إنزال الترويسة والفوتر لأسفل الصفحة وتثبيت التواقيع تحت الصف 19 مباشرة)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -645,8 +645,8 @@ elif choice == "سجل الحضور والتقارير":
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: -30mm;
-            margin-bottom: 2px;
+            margin-top: 1mm;
+            margin-bottom: 1px;
             font-size: 11px;
             font-weight: bold;
             text-align: center;
@@ -712,19 +712,17 @@ elif choice == "سجل الحضور والتقارير":
                     {rows_html}
                 </tbody>
             </table>
-        </div>
-        
-        <div>
+            
             <div class="signatures">
                 <div>المختص<br><span>........................</span></div>
                 <div>مسئول المعمل<br><span>........................</span></div>
                 <div>مدير إدارة الفرع<br><span>........................</span></div>
             </div>
-            
-            <div class="footer">
-                <div>الأكاديمية المهنية للمعلمين - فرع الجيزة | كشف حضور اليوم</div>
-                <div>صفحة 1 من 1</div>
-            </div>
+        </div>
+        
+        <div class="footer">
+            <div>الأكاديمية المهنية للمعلمين - فرع الجيزة | كشف حضور اليوم</div>
+            <div>صفحة 1 من 1</div>
         </div>
         
         <button class="print-btn" onclick="window.print()">🖨️ طباعة الكشف الرسمي</button>
@@ -742,7 +740,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تنسيق خطوط التوقيعات ملتصقة تماماً)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (توقيعات تحت الصف 19 وترويسة أسفل الصفحة)
         </button>
         """
     components.html(report_popup_btn, height=70)
