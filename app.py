@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع الدمج التام لصفحة واحدة A4 بدون أي فراغات)
+# 3. صفحة سجل الحضور والتقارير (مع دمج كامل وهندسة دقيقة لصفحة A4 واحدة نهائية)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -547,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (بارتفاع مرن ومضغوط لضمان التوافق التام مع صفحة A4 واحدة)
+    # توليد صفوف الجدول الرسمية (بارتفاعات محسوبة بالبكسل لتتطابق مع صفحة A4 الأفقية تماماً)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -560,27 +560,27 @@ elif choice == "سجل الحضور والتقارير":
         r_serial = r.get("Code_ID", f"A-{idx:03d}")
         rows_html += f"""
                 <tr>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;">{idx}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px; font-weight: bold;">{r_serial}</td>
-                    <td style="border: 1px solid #666; padding: 1px 4px; text-align: right; font-size: 11px;">{r_name}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;">{r_code}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;">{r_id}</td>
-                    <td style="border: 1px solid #666; padding: 1px 4px; text-align: right; font-size: 11px;">{r_prog}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 10px;">{r_datetime}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;">{idx}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px; font-weight: bold;">{r_serial}</td>
+                    <td style="border: 1px solid #555; padding: 1px 4px; text-align: right; font-size: 11px;">{r_name}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;">{r_code}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;">{r_id}</td>
+                    <td style="border: 1px solid #555; padding: 1px 4px; text-align: right; font-size: 11px;">{r_prog}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 10px;">{r_datetime}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center;"></td>
                 </tr>
                 """
       else:
         rows_html += f"""
                 <tr>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;">{idx}</td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 4px; text-align: right; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 4px; text-align: right; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
-                    <td style="border: 1px solid #666; padding: 1px 2px; text-align: center;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;">{idx}</td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 4px; text-align: right; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 4px; text-align: right; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #555; padding: 1px 2px; text-align: center;"></td>
                 </tr>
                 """
 
@@ -592,22 +592,27 @@ elif choice == "سجل الحضور والتقارير":
     <style>
         @page {{
             size: A4 landscape;
-            margin: 2mm 5mm;
+            margin: 2mm 4mm;
         }}
-        body {{
-            font-family: 'Tahoma', 'Arial', sans-serif;
-            background: #fff;
+        html, body {{
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: #fff;
             color: #000;
+            box-sizing: border-box;
         }}
         .sheet {{
             width: 100%;
             height: 100vh;
+            max-height: 195mm;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-sizing: border-box;
+            padding: 2mm;
         }}
         .header-top {{
             display: flex;
@@ -638,12 +643,12 @@ elif choice == "سجل الحضور والتقارير":
             text-align: center;
         }}
         td {{
-            height: 14.5px;
+            height: 13.5px;
         }}
         .signatures {{
             display: flex;
             justify-content: space-between;
-            margin-top: 2px;
+            margin-top: 1px;
             margin-bottom: 1px;
             font-size: 11px;
             font-weight: bold;
@@ -732,7 +737,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (صفحة واحدة أكيدة)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (مضمن في صفحة واحدة بدقة)
         </button>
         """
     components.html(report_popup_btn, height=70)
