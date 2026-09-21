@@ -516,7 +516,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع إدراج اللوجو وعمود "م" المرقم تلقائياً)
+# 3. صفحة سجل الحضور والتقارير (بدون شعار في كشف الحضور الرسمي)
 elif choice == "سجل الحضور والتقارير":
   st.markdown(
       "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
@@ -588,18 +588,6 @@ elif choice == "سجل الحضور والتقارير":
                 </tr>
                 """
 
-    report_logo_base64 = ""
-    if os.path.exists("Logo.png"):
-      with open("Logo.png", "rb") as f:
-        report_logo_base64 = base64.b64encode(f.read()).decode("utf-8")
-
-    report_logo_tag = (
-        f'<img src="data:image/png;base64,{report_logo_base64}"'
-        ' style="height: 45px; display: block; margin: 0 auto 2px auto;" />'
-        if report_logo_base64
-        else ""
-    )
-
     official_report_html = f"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -636,16 +624,14 @@ elif choice == "سجل الحضور والتقارير":
             align-items: center;
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 1px;
-        }}
-        .title-container {{
-            text-align: center;
             margin-bottom: 2px;
         }}
         .title {{
-            font-size: 13px;
+            text-align: center;
+            font-size: 14px;
             font-weight: bold;
             color: #0b2246;
+            margin-bottom: 4px;
         }}
         table {{
             width: 100%;
@@ -711,10 +697,7 @@ elif choice == "سجل الحضور والتقارير":
                 <div>الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
             </div>
             
-            <div class="title-container">
-                {report_logo_tag}
-                <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
-            </div>
+            <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
             
             <table>
                 <thead>
