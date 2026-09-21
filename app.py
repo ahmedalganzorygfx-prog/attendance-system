@@ -276,7 +276,6 @@ if choice == "إصدار التذاكر والحضور":
         serial_num = len(today_logs) + 1
         serial_str = f"A-{serial_num:03d}"
 
-        # البحث عن كود المعلم الحقيقي من قاعدة بيانات المعلمين إن وجد
         t_real_code = ft["code"]
         match_t = teachers_df[
             teachers_df["National_ID"].astype(str).str.strip()
@@ -339,7 +338,7 @@ if choice == "إصدار التذاكر والحضور":
         )
         st.markdown("---")
         st.markdown(
-            "<p style='text-align: center; font-size: 13px; color:"
+            "<p style='text-align: center; font-size: 12px; color:"
             " #666;'>تذكرة أسبقية الحضور</p>",
             unsafe_allow_html=True,
         )
@@ -347,7 +346,7 @@ if choice == "إصدار التذاكر والحضور":
         st.markdown(
             f"<div style='text-align: center; background-color: #fdf8e2; border:"
             " 1.5px dashed #C9A227; padding: 10px; border-radius: 8px; margin:"
-            " 10px 0;'><span style='font-size: 26px; font-weight: bold; color:"
+            " 10px 0;'><span style='font-size: 24px; font-weight: bold; color:"
             f" #d9534f;'>[ {tk['serial']} ]</span></div>",
             unsafe_allow_html=True,
         )
@@ -367,7 +366,7 @@ if choice == "إصدار التذاكر والحضور":
         )
 
         st.markdown(
-            "<p style='text-align: center; font-size: 13px; color: #10233F;"
+            "<p style='text-align: center; font-size: 12px; color: #10233F;"
             " font-weight: bold; margin-top: 10px;'>أهلاً بكم في فرع الجيزة - يرجى"
             " الانتظار لحين استدعائكم</p>",
             unsafe_allow_html=True,
@@ -519,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع كشف الحضور الرسمي المطابق للصورة تماماً)
+# 3. صفحة سجل الحضور والتقارير (مع ضبط كشف الحضور بصفحة واحدة وتوسيع خانة التوقيع)
 elif choice == "سجل الحضور والتقارير":
   st.header("📋 سجل الحضور والتقارير اليومية")
 
@@ -548,7 +547,7 @@ elif choice == "سجل الحضور والتقارير":
     st.markdown("---")
     st.subheader("🖨️ طباعة كشف إثبات الحضور الرسمي (مطابق للصورة)")
 
-    # توليد صفوف الجدول الرسمية (مطابقة للصورة تماماً حتى 19 صفاً)
+    # توليد صفوف الجدول الرسمية (مضغوطة الارتفاع لتناسب صفحة A4 واحدة مع توسيع خانة التوقيع)
     rows_html = ""
     for idx in range(1, 20):
       if idx <= len(filtered_log):
@@ -561,27 +560,27 @@ elif choice == "سجل الحضور والتقارير":
         r_serial = r.get("Code_ID", f"A-{idx:03d}")
         rows_html += f"""
                 <tr>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{idx}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px; font-weight: bold;">{r_serial}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;">{r_name}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{r_code}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{r_id}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;">{r_prog}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 11px;">{r_datetime}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;">{idx}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px; font-weight: bold;">{r_serial}</td>
+                    <td style="border: 1px solid #888; padding: 3px 4px; text-align: right; font-size: 11px;">{r_name}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;">{r_code}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;">{r_id}</td>
+                    <td style="border: 1px solid #888; padding: 3px 4px; text-align: right; font-size: 11px;">{r_prog}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 10px;">{r_datetime}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center;"></td>
                 </tr>
                 """
       else:
         rows_html += f"""
                 <tr>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;">{idx}</td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: right; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center; font-size: 12px;"></td>
-                    <td style="border: 1px solid #bbb; padding: 6px; text-align: center;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;">{idx}</td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 4px; text-align: right; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 4px; text-align: right; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center; font-size: 11px;"></td>
+                    <td style="border: 1px solid #888; padding: 3px 2px; text-align: center;"></td>
                 </tr>
                 """
 
@@ -591,54 +590,131 @@ elif choice == "سجل الحضور والتقارير":
     <meta charset="UTF-8">
     <title>كشف إثبات حضور المعلمين - {filter_date}</title>
     <style>
-        body {{ font-family: 'Tahoma', 'Arial', sans-serif; background: #fff; margin: 0; padding: 20px; color: #000; }}
-        .sheet {{ width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; }}
-        .header-top {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: bold; }}
-        .title {{ text-align: center; font-size: 18px; font-weight: bold; color: #0b2246; margin-bottom: 15px; }}
-        table {{ width: 100%; border-collapse: collapse; margin-bottom: 30px; }}
-        th {{ background-color: #0b2246; color: white; border: 1px solid #0b2246; padding: 8px 4px; font-size: 12px; text-align: center; }}
-        .signatures {{ display: flex; justify-content: space-between; margin-top: 40px; font-size: 13px; font-weight: bold; text-align: center; }}
-        .footer {{ display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; border-top: 1px solid #ccc; padding-top: 5px; }}
-        .print-btn {{ display: block; width: 200px; margin: 20px auto; background: #0b2246; color: white; border: none; padding: 10px; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; }}
-        @media print {{ .print-btn {{ display: none; }} body {{ padding: 0; }} }}
+        @page {{
+            size: A4 landscape;
+            margin: 8mm 10mm;
+        }}
+        body {{
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+            color: #000;
+        }}
+        .sheet {{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }}
+        .header-top {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }}
+        .title {{
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #0b2246;
+            margin-bottom: 6px;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }}
+        th {{
+            background-color: #0b2246;
+            color: white;
+            border: 1px solid #0b2246;
+            padding: 5px 2px;
+            font-size: 11px;
+            text-align: center;
+        }}
+        td {{
+            height: 19px;
+        }}
+        .signatures {{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }}
+        .footer {{
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            border-top: 1px solid #ccc;
+            padding-top: 3px;
+            margin-top: 5px;
+        }}
+        .print-btn {{
+            display: block;
+            width: 200px;
+            margin: 15px auto;
+            background: #0b2246;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }}
+        @media print {{
+            .print-btn {{ display: none; }}
+            body {{ background: white; }}
+        }}
     </style>
 </head>
 <body>
     <div class="sheet">
-        <div class="header-top">
-            <div>التاريخ: {filter_date}</div>
-            <div>الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+        <div>
+            <div class="header-top">
+                <div>التاريخ: {filter_date}</div>
+                <div>الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+            </div>
+            
+            <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 4%;">م</th>
+                        <th style="width: 7%;">الترتيب</th>
+                        <th style="width: 22%;">الاسم</th>
+                        <th style="width: 9%;">كود المعلم</th>
+                        <th style="width: 14%;">الرقم القومي</th>
+                        <th style="width: 17%;">البرنامج</th>
+                        <th style="width: 14%;">وقت وتاريخ الوصول</th>
+                        <th style="width: 13%;">التوقيع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows_html}
+                </tbody>
+            </table>
         </div>
         
-        <div class="title">كشف إثبات حضور المعلمين ({filter_date})</div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 5%;">م</th>
-                    <th style="width: 10%;">الترتيب</th>
-                    <th style="width: 20%;">الاسم</th>
-                    <th style="width: 11%;">كود المعلم</th>
-                    <th style="width: 16%;">الرقم القومي</th>
-                    <th style="width: 18%;">البرنامج</th>
-                    <th style="width: 12%;">وقت وتاريخ الوصول</th>
-                    <th style="width: 8%;">التوقيع</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows_html}
-            </tbody>
-        </table>
-        
-        <div class="signatures">
-            <div>المختص<br><br>........................</div>
-            <div>مسئول المعمل<br><br>........................</div>
-            <div>مدير إدارة الفرع<br><br>........................</div>
-        </div>
-        
-        <div class="footer">
-            <div>الأكاديمية المهنية للمعلمين - فرع الجيزة | كشف حضور اليوم</div>
-            <div>صفحة 1 من 1</div>
+        <div>
+            <div class="signatures">
+                <div>المختص<br><br>........................</div>
+                <div>مسئول المعمل<br><br>........................</div>
+                <div>مدير إدارة الفرع<br><br>........................</div>
+            </div>
+            
+            <div class="footer">
+                <div>الأكاديمية المهنية للمعلمين - فرع الجيزة | كشف حضور اليوم</div>
+                <div>صفحة 1 من 1</div>
+            </div>
         </div>
         
         <button class="print-btn" onclick="window.print()">🖨️ طباعة الكشف الرسمي</button>
@@ -656,7 +732,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (مطابق للصورة)
+            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (صفحة واحدة وتوسيع التوقيع)
         </button>
         """
     components.html(report_popup_btn, height=70)
