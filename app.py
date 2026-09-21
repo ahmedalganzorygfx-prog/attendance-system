@@ -518,7 +518,7 @@ elif choice == "إدارة المعلمين":
   st.subheader("قائمة المعلمين المسجلين:")
   st.dataframe(teachers_df, use_container_width=True)
 
-# 3. صفحة سجل الحضور والتقارير (مع توسيط العناوين في الواجهة وأزرار الطباعة)
+# 3. صفحة سجل الحضور والتقارير (مع توسيط العناوين وتحديث نص الزر بدقة)
 elif choice == "سجل الحضور والتقارير":
   st.markdown(
       "<h2 style='text-align: center;'>📋 سجل الحضور والتقارير اليومية</h2>",
@@ -746,7 +746,7 @@ elif choice == "سجل الحضور والتقارير":
         }}
         </script>
         <button onclick="openReportWindow()" style="width: 100%; background-color: #0b2246; color: white; padding: 14px 20px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tahoma', sans-serif;">
-            🖨️ فتح وعرض كشف الحضور الرسمي للطباعة (تويعات تحت الصف 19 وترويسة في أسفل الصفحة)
+            🖨️ فتح وعرض كشف الحضور للطباعة
         </button>
         """
     components.html(report_popup_btn, height=70)
